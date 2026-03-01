@@ -1,0 +1,214 @@
+<prompt>
+  <task>
+    Write a long-form content piece that dives deep into the topic below.
+    The piece should be rigorous, coherent, and concrete.
+  </task>
+
+  <topic>
+    <!-- Fill in: e.g., "XML-structured prompting", "Systems thinking", "Zero-trust networking" -->
+  </topic>
+
+  <audience>
+    <!-- Fill in: "curious generalist", "technical leader", "graduate-level reader", etc. -->
+  </audience>
+
+  <intent>
+    <!-- Fill in: educate | persuade | explore | compare | critique -->
+  </intent>
+
+  <stance>
+    <!-- Fill in: neutral-explanatory | skeptical | optimistic | dialectical -->
+  </stance>
+
+  <voice_and_tone>
+    <style>Modern, restrained, and clear.</style>
+    <avoid>
+      <item>Hype and marketing language</item>
+      <item>Vague generalities</item>
+      <item>Overconfident claims without support</item>
+    </avoid>
+  </voice_and_tone>
+
+  <source_policy>
+    <policy>
+      If you were not given sources, do not present niche facts as certain.
+      Prefer generally known information or clearly label uncertainty.
+    </policy>
+    <policy>
+      If you rely on provided sources in <sources>, ground specific claims in them.
+      If something is not supported, either omit it or label it as inference.
+    </policy>
+  </source_policy>
+
+  <constraints>
+    <!-- Content constraints -->
+    <constraint>Start by defining the topic in plain language before going deep.</constraint>
+    <constraint>Use at least one "mental model" or framework to organize the idea.</constraint>
+    <constraint>Include both strengths and weaknesses; no one-sided treatment.</constraint>
+    <constraint>Include at least two concrete examples (they can be hypothetical).</constraint>
+    <constraint>Include "when to use / when not to use" guidance.</constraint>
+
+    <!-- Rigor constraints -->
+    <constraint>Introduce key terms before using them heavily.</constraint>
+    <constraint>Distinguish between: (a) established facts, (b) reasonable inference, (c) speculation.</constraint>
+    <constraint>Avoid name-dropping; only cite concepts/people if they add explanatory value.</constraint>
+
+    <!-- Structural constraints -->
+    <constraint>Use the exact section headings specified in <output_contract>.</constraint>
+    <constraint>No preamble, no meta-commentary about the prompt.</constraint>
+    <constraint>Keep paragraphs reasonably short; prefer clarity over density.</constraint>
+  </constraints>
+
+  <optional_context>
+    <!-- Add any additional framing: domain, angle, stakes, constraints from your org, etc. -->
+  </optional_context>
+
+  <sources>
+    <!-- Optional. If you have sources, include them as distinct entries. -->
+    <!--
+    <source id="S1"><![CDATA[...]]></source>
+    <source id="S2"><![CDATA[...]]></source>
+    -->
+  </sources>
+
+  <reader_promises>
+    <!-- Optional but useful: what the reader will walk away with -->
+    <promise>By the end, the reader can explain the idea simply and apply it appropriately.</promise>
+    <promise>The reader can recognize common pitfalls and misuses.</promise>
+  </reader_promises>
+
+  <output_contract>
+    <format>
+      Use markdown with H2 section headings exactly as written below.
+      Under each heading, write substantive content (not bullet-only sections).
+    </format>
+
+    <required_headings>
+      <heading>Introduction and explanation</heading>
+      <heading>Technique deep dive</heading>
+      <heading>Pros and cons, when and where to use</heading>
+      <heading>Use cases and examples</heading>
+      <heading>Applicability and potential</heading>
+      <heading>What's next</heading>
+    </required_headings>
+
+    <section_requirements>
+      <introduction_and_explanation>
+        <requirements>
+          <item>Define the topic in plain language</item>
+          <item>Explain why it matters (what problem it solves)</item>
+          <item>Give a quick "map" of what's coming</item>
+        </requirements>
+      </introduction_and_explanation>
+
+      <technique_deep_dive>
+        <requirements>
+          <item>Lay out the internal logic (parts, mechanisms, moving pieces)</item>
+          <item>Describe at least one workflow end-to-end</item>
+          <item>Call out common failure modes</item>
+        </requirements>
+      </technique_deep_dive>
+
+      <pros_cons_when_where>
+        <requirements>
+          <item>Balanced trade-offs</item>
+          <item>Decision criteria (signals that it fits)</item>
+          <item>Anti-patterns (when it's a bad idea)</item>
+        </requirements>
+      </pros_cons_when_where>
+
+      <use_cases_and_examples>
+        <requirements>
+          <item>At least two examples with inputs and outputs</item>
+          <item>One example should be "edge case / tricky scenario"</item>
+        </requirements>
+      </use_cases_and_examples>
+
+      <applicability_and_potential>
+        <requirements>
+          <item>Where it generalizes well</item>
+          <item>Where it breaks down</item>
+          <item>What capabilities it enables in a system/team</item>
+        </requirements>
+      </applicability_and_potential>
+
+      <whats_next>
+        <requirements>
+          <item>Likely evolutions of the technique/idea</item>
+          <item>Practical next steps for the reader</item>
+          <item>Open questions worth watching</item>
+        </requirements>
+      </whats_next>
+    </section_requirements>
+
+    <length>
+      <!--
+        Length guidance helps models calibrate depth and avoid both
+        truncation (too short) and padding (too long with filler).
+      -->
+
+      <!-- Target word count range -->
+      <word_count>
+        <minimum>2000</minimum>
+        <maximum>4000</maximum>
+        <ideal>2500-3500</ideal>
+        <note>
+          These are guidelines, not hard limits. Prioritize completeness
+          over hitting a number. A 1800-word piece that covers everything
+          well is better than a 2500-word piece with padding.
+        </note>
+      </word_count>
+
+      <!-- Section balance - prevents one section from dominating -->
+      <section_balance>
+        <policy>No single section should exceed 30% of total length</policy>
+        <policy>The shortest section should be at least 10% of total length</policy>
+        <policy>
+          Approximate distribution:
+          - Introduction: 10-15%
+          - Technique deep dive: 25-30%
+          - Pros/cons/when/where: 15-20%
+          - Use cases and examples: 20-25%
+          - Applicability: 10-15%
+          - What's next: 10-15%
+        </policy>
+      </section_balance>
+
+      <!-- Quality over quantity -->
+      <quality_signals>
+        <prefer>Concrete examples over abstract descriptions</prefer>
+        <prefer>Specific mechanisms over vague claims</prefer>
+        <prefer>Actionable guidance over philosophical musings</prefer>
+        <avoid>Repetition of points already made</avoid>
+        <avoid>Throat-clearing ("In this section, we will discuss...")</avoid>
+        <avoid>Padding with obvious statements</avoid>
+        <avoid>Excessive hedging that adds words without nuance</avoid>
+      </quality_signals>
+
+      <!-- Depth indicators -->
+      <depth_requirements>
+        <requirement section="technique_deep_dive">
+          Include at least 3 distinct sub-points or mechanisms.
+          Each should have enough detail that a reader could implement it.
+        </requirement>
+        <requirement section="use_cases">
+          Examples should include specific inputs/outputs, not just descriptions.
+          At least one example should show a non-obvious application.
+        </requirement>
+        <requirement section="pros_cons">
+          Trade-offs should be genuine, not strawman weaknesses.
+          Include decision criteria: "Use this when X, avoid when Y."
+        </requirement>
+      </depth_requirements>
+
+      <!-- General principle -->
+      <principle>
+        Prefer completeness over brevity, but avoid filler.
+        Every paragraph should either: (1) introduce a new idea,
+        (2) provide evidence/examples, or (3) synthesize/conclude.
+        If a paragraph does none of these, cut it.
+      </principle>
+    </length>
+  </output_contract>
+</prompt>
+

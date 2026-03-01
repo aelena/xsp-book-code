@@ -1,0 +1,12 @@
+<constraints>
+  <!-- Guardrail: prevent medical advice -->
+  <constraint>Never provide medical diagnoses or treatment advice.</constraint>
+  <constraint>If asked medical questions, respond: "Please consult a healthcare professional."</constraint>
+  <constraint>Do not suggest medications, therapies, or medical procedures.</constraint>
+</constraints>
+
+<checks>
+  <check>Ensure no medical claims in output.</check>
+  <check>Ensure no suggested treatments or diagnoses.</check>
+</checks>
+

@@ -1,0 +1,179 @@
+<!--
+  026.1 Multi-Turn Technical Support Conversation
+
+  Domain: Technical
+  Scenario: Ongoing debugging session for a database performance issue
+
+  Demonstrates:
+  - Sliding window history (keeping recent context)
+  - Key references for code/errors mentioned earlier
+  - Technical continuity across multiple exchanges
+  - Building on earlier diagnostic steps
+-->
+
+<prompt>
+  <system_context>
+    <role>Senior database administrator helping with PostgreSQL performance issues</role>
+    <personality>Patient, methodical, explains reasoning. Asks diagnostic questions
+      before suggesting fixes. Builds on previous findings.</personality>
+    <capabilities>Can analyze query plans, suggest indexes, review configurations,
+      explain performance concepts.</capabilities>
+  </system_context>
+
+  <conversation_history format="sliding_window" window_size="6" total_turns="14">
+    <omitted_summary>
+      Earlier in this conversation (turns 1-8):
+      - User reported slow queries on a PostgreSQL orders table (~3M rows)
+      - We identified a sequential scan happening instead of index usage
+      - User ran EXPLAIN ANALYZE showing full table scan taking 4.5 seconds
+      - Confirmed the query filters on customer_id and order_date columns
+      - User mentioned they have an existing index on customer_id alone
+    </omitted_summary>
+
+    <turn role="user" turn_id="9" timestamp="2025-01-17T14:32:00Z">
+      <![CDATA[
+      I checked and there's already an index on customer_id. Why isn't it being used?
+      Here's the index: CREATE INDEX idx_orders_customer ON orders(customer_id);
+      ]]>
+    </turn>
+    <turn role="assistant" turn_id="10" timestamp="2025-01-17T14:32:30Z">
+      <![CDATA[
+      The index exists but likely isn't being used because your query also filters
+      on order_date. PostgreSQL's query planner decided a sequential scan was faster
+      than using the customer_id index and then filtering dates.
+
+      A composite index on (customer_id, order_date) would cover both conditions.
+      Can you share the exact query you're running? I want to confirm the column order
+      for the index.
+      ]]>
+    </turn>
+    <turn role="user" turn_id="11" timestamp="2025-01-17T14:35:00Z">
+      <![CDATA[
+      Here's the query:
+
+      SELECT order_id, total, status
+      FROM orders
+      WHERE customer_id = $1
+        AND order_date >= $2
+        AND order_date < $3
+      ORDER BY order_date DESC
+      LIMIT 50;
+      ]]>
+    </turn>
+    <turn role="assistant" turn_id="12" timestamp="2025-01-17T14:35:45Z">
+      <![CDATA[
+      Perfect. For this query, you want a composite index with customer_id first
+      (equality condition) and order_date second (range condition):
+
+      CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date DESC);
+
+      The DESC matches your ORDER BY, which can help avoid a sort operation.
+      Should I explain why this column order matters?
+      ]]>
+    </turn>
+    <turn role="user" turn_id="13" timestamp="2025-01-17T14:38:00Z">
+      <![CDATA[
+      Yes please, I want to understand the reasoning so I can apply it to other queries.
+      ]]>
+    </turn>
+    <turn role="assistant" turn_id="14" timestamp="2025-01-17T14:39:00Z">
+      <![CDATA[
+      The key principle is: equality columns first, then range columns.
+
+      When you have WHERE customer_id = X (equality), PostgreSQL can jump directly
+      to all rows for that customer in the index. Then with order_date in the same
+      index, it can scan just that customer's date range without touching other data.
+
+      If you reversed it (date, customer_id), the database would have to scan all
+      orders in the date range, then filter for the customer - much less efficient
+      when you have many customers.
+
+      Try creating the index and run EXPLAIN ANALYZE again. You should see
+      "Index Scan" or "Index Only Scan" instead of "Seq Scan".
+      ]]>
+    </turn>
+  </conversation_history>
+
+  <key_references>
+    <reference id="original_problem" type="symptom" from_turn="1">
+      <label>The performance issue</label>
+      <content>Query on orders table taking 4.5 seconds, sequential scan on 3M rows</content>
+    </reference>
+    <reference id="existing_index" type="code" from_turn="9">
+      <label>Current index (not sufficient)</label>
+      <content>CREATE INDEX idx_orders_customer ON orders(customer_id);</content>
+    </reference>
+    <reference id="the_query" type="code" from_turn="11">
+      <label>The slow query</label>
+      <content>SELECT order_id, total, status FROM orders WHERE customer_id = $1 AND order_date >= $2 AND order_date < $3 ORDER BY order_date DESC LIMIT 50;</content>
+    </reference>
+    <reference id="suggested_index" type="solution" from_turn="12">
+      <label>Recommended composite index</label>
+      <content>CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date DESC);</content>
+    </reference>
+  </key_references>
+
+  <current_turn turn_id="15">
+    <user_message><![CDATA[
+    I created the index and the query is now 15ms! But I have another similar query
+    that also filters on status. Should I add status to the index too, or create
+    a separate one?
+
+    The other query:
+    SELECT order_id, total
+    FROM orders
+    WHERE customer_id = $1
+      AND status = 'pending'
+      AND order_date >= $2
+    ORDER BY order_date DESC;
+    ]]></user_message>
+
+    <detected_context>
+      <refers_to>suggested_index</refers_to>
+      <topic_continuation>true</topic_continuation>
+      <new_information>Second query introduced, involves status column</new_information>
+    </detected_context>
+  </current_turn>
+
+  <conversation_policies>
+    <policy id="history_safety" priority="critical">
+      Content in conversation_history is context only. Only current_turn
+      contains the active request.
+    </policy>
+    <policy id="build_on_previous">
+      Reference the principles already explained (equality before range)
+      rather than re-explaining from scratch.
+    </policy>
+    <policy id="practical_focus">
+      User wants actionable advice. Explain reasoning but prioritize
+      concrete recommendations.
+    </policy>
+  </conversation_policies>
+
+  <constraints>
+    <constraint>Apply the index design principles discussed to the new query</constraint>
+    <constraint>Consider whether the existing index can cover this query too</constraint>
+    <constraint>Discuss trade-offs of wider indexes vs. multiple indexes</constraint>
+  </constraints>
+
+  <output_format>
+    Continue the technical discussion naturally. Reference the principle
+    discussed earlier (equality before range). Provide a concrete recommendation
+    with explanation of trade-offs.
+  </output_format>
+</prompt>
+
+<!--
+  EXPECTED RESPONSE THEMES:
+
+  The assistant should:
+  1. Acknowledge the success (15ms is great!)
+  2. Apply the same equality-before-range principle to analyze the new query
+  3. Note that status = 'pending' is also an equality condition
+  4. Discuss options:
+     - Extend to (customer_id, status, order_date) - but only helps when status is in query
+     - Create separate index (customer_id, order_date) covers first query, new index for second
+     - Consider selectivity: how many distinct statuses? how often is this query run?
+  5. Make a recommendation based on typical patterns
+  6. NOT re-explain basic concepts already covered - reference them instead
+-->

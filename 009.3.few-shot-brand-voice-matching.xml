@@ -1,0 +1,131 @@
+<!--
+  Example 009.3: Marketing - Brand Voice Matching and Rewriting
+
+  This example demonstrates few-shot learning for rewriting content to match
+  a specific brand voice. The examples teach subtle tone adjustments while
+  preserving the core message.
+
+  Use case: Content teams ensuring consistent brand voice across all copy
+-->
+
+<prompt>
+  <task>
+    Rewrite the input text to match the brand voice demonstrated in the examples.
+    Preserve the core message while adjusting tone, word choice, and style.
+  </task>
+
+  <context><![CDATA[
+  Brand: Notion (productivity software)
+  Voice characteristics:
+  - Friendly but not overly casual
+  - Clear and direct
+  - Quietly confident, never boastful
+  - Uses "you" more than "we"
+  - Avoids jargon and buzzwords
+  - Occasionally playful, never forced
+  ]]></context>
+
+  <constraints>
+    <constraint>Keep the same core message and information</constraint>
+    <constraint>Match the length approximately (within 20%)</constraint>
+    <constraint>Never use: "synergy", "leverage", "best-in-class", "game-changing"</constraint>
+    <constraint>Never use exclamation marks in headlines</constraint>
+    <constraint>Contractions are encouraged (you're, it's, we're)</constraint>
+  </constraints>
+
+  <examples>
+    <example type="standard">
+      <description>Generic corporate → Notion voice (feature announcement)</description>
+      <input><![CDATA[
+We are excited to announce the launch of our revolutionary new AI-powered feature! This best-in-class solution leverages cutting-edge technology to supercharge your productivity and take your workflow to the next level!!!
+      ]]></input>
+      <output><![CDATA[
+We built something new. It's an AI feature that helps you write, summarize, and organize—right where you already work. No new tools to learn. Just a little help when you need it.
+      ]]></output>
+      <annotation>
+        Removed: hype words, exclamation marks, "revolutionary", "cutting-edge"
+        Added: specificity (write, summarize, organize), user benefit focus
+        Tone shift: from shouting excitement to quiet confidence
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Formal enterprise → Notion voice (value proposition)</description>
+      <input><![CDATA[
+Our platform provides enterprise-grade solutions that enable organizations to maximize operational efficiency through streamlined collaboration and centralized knowledge management systems.
+      ]]></input>
+      <output><![CDATA[
+One place for your team's work. Docs, projects, notes, and wikis—connected so nothing gets lost. It works for teams of 5 or 5,000.
+      ]]></output>
+      <annotation>
+        Removed: "enterprise-grade", "operational efficiency", "streamlined"
+        Added: concrete nouns (docs, projects, notes), scale mention without boasting
+        Changed "organizations" to "your team" for directness
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Casual/slangy → Notion voice (social post)</description>
+      <input><![CDATA[
+OMG you guys our templates are literally insane 🤯🔥 Seriously tho if you're not using them you're missing out BIG TIME!!! Drop a 🙌 if you want us to drop more!!
+      ]]></input>
+      <output><![CDATA[
+Templates can save you hours of setup time. We've got hundreds—for product roadmaps, meeting notes, personal goals, and more. Find one that fits how you work.
+      ]]></output>
+      <annotation>
+        Removed: emoji overload, "literally insane", "you guys", caps
+        Kept: enthusiasm through specificity rather than hype
+        Added: concrete examples, user benefit (save hours)
+      </annotation>
+    </example>
+
+    <example type="edge_case">
+      <description>Technical documentation - maintain precision while adding warmth</description>
+      <input><![CDATA[
+API rate limits are enforced at 3 requests per second per user. Exceeding this threshold will result in HTTP 429 responses. Implement exponential backoff in your retry logic.
+      ]]></input>
+      <output><![CDATA[
+The API allows 3 requests per second per user. If you go over, you'll get a 429 response. When that happens, wait a bit before retrying—exponential backoff works well here.
+      ]]></output>
+      <annotation>
+        Technical accuracy preserved completely.
+        Added: "you'll", "wait a bit", "works well here" for warmth
+        Didn't over-casualize—this is still documentation
+      </annotation>
+    </example>
+
+    <example type="negative">
+      <description>Don't swing too far casual - maintain professionalism</description>
+      <input><![CDATA[
+Notion offers a comprehensive workspace solution with advanced organizational capabilities.
+      ]]></input>
+      <wrong_output><![CDATA[
+Notion is like, super awesome for getting your stuff organized, ya know? It's got all the things you need in one chill place lol 😎
+      ]]></wrong_output>
+      <correct_output><![CDATA[
+Notion is a workspace where you can write, plan, and organize—all in one place. It's flexible enough to work the way you do.
+      ]]></correct_output>
+      <annotation>
+        The wrong version over-corrects into unprofessional slang.
+        Notion is friendly, not immature. No "lol", "ya know", or casual emoji.
+        The correct version is warm but still professional.
+      </annotation>
+    </example>
+  </examples>
+
+  <input><![CDATA[
+Introducing our new database functionality! With powerful relational capabilities and seamless integration across your workspace, you can now leverage interconnected data structures to optimize your team's information architecture and drive unprecedented levels of organizational synergy!
+  ]]></input>
+
+  <output_format>
+    Return only the rewritten text in the Notion brand voice.
+    No explanation, no before/after comparison, just the new copy.
+  </output_format>
+
+  <checks>
+    <check>No banned words used (synergy, leverage, best-in-class, game-changing)</check>
+    <check>No exclamation marks in headlines</check>
+    <check>Core features/message preserved</check>
+    <check>Tone matches examples (friendly, clear, quietly confident)</check>
+  </checks>
+</prompt>

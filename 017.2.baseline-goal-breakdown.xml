@@ -1,0 +1,70 @@
+<prompt>
+  <!--
+    Example 17.2: Personal Development - Goal Breakdown Assistant
+    Uses the baseline template for breaking down personal goals into actionable steps
+  -->
+
+  <task>Break down the personal goal into a structured action plan with measurable milestones.</task>
+
+  <context><![CDATA[
+  The user wants to transform a high-level personal or professional goal into
+  concrete, actionable steps. The plan should be realistic, account for common
+  obstacles, and include checkpoints for progress evaluation.
+  ]]></context>
+
+  <constraints>
+    <constraint>Create no more than 5 major milestones.</constraint>
+    <constraint>Each milestone must have 2-4 specific action items.</constraint>
+    <constraint>Include estimated timeframes that are realistic, not optimistic.</constraint>
+    <constraint>Identify at least 2 potential obstacles and mitigation strategies.</constraint>
+    <constraint>All action items must be specific and measurable (not vague).</constraint>
+    <constraint>Do not include motivational fluff or generic advice.</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  Goal: Learn conversational Spanish within 12 months
+  Current level: Complete beginner, know only basic greetings
+  Available time: 30 minutes daily, 2 hours on weekends
+  Resources available: Smartphone, laptop, $50/month budget
+  Motivation: Planning to relocate to Barcelona for work
+  ]]></input>
+
+  <output_format>
+Return a structured plan in this exact format:
+
+## Goal Summary
+(One sentence restating the goal with success criteria)
+
+## Milestones
+For each milestone:
+### Milestone N: [Name] (Target: [timeframe])
+- **Success Metric:** [How to know it's achieved]
+- **Actions:**
+  1. [Specific action with frequency]
+  2. [Specific action with frequency]
+
+## Potential Obstacles
+| Obstacle | Mitigation Strategy |
+|----------|---------------------|
+
+## Weekly Time Allocation
+(Table showing how the 30min daily + 2hr weekend is distributed)
+
+## Progress Checkpoints
+(Monthly check-in questions to assess progress)
+  </output_format>
+
+  <examples>
+    <example>
+      <description>Good vs bad action item</description>
+      <input>Bad: "Practice speaking"</input>
+      <output>Good: "Complete one 15-minute iTalki conversation lesson every Saturday"</output>
+    </example>
+  </examples>
+
+  <checks>
+    <check>Total time allocation matches stated availability (30min/day + 2hr/weekend).</check>
+    <check>Each action item answers: what, when, and how often.</check>
+    <check>Milestones build progressively toward the final goal.</check>
+  </checks>
+</prompt>

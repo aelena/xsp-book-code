@@ -1,0 +1,177 @@
+<!--
+  Example 009.1: Technical - Code Review Comment Classification
+
+  This example demonstrates few-shot learning for classifying code review
+  comments into actionable categories. The examples teach the model to
+  distinguish between different types of feedback and assign priority.
+
+  Use case: Automated triage of code review comments in CI/CD pipelines
+-->
+
+<prompt>
+  <task>
+    Classify code review comments into categories and assign priority levels.
+    Use the exact format demonstrated in the examples.
+  </task>
+
+  <context><![CDATA[
+  Code review comments come from a team reviewing pull requests. Comments need
+  to be classified so they can be routed appropriately:
+  - Blocking issues must be fixed before merge
+  - Suggestions are optional improvements
+  - Questions need author response
+  - Praise requires no action
+  ]]></context>
+
+  <constraints>
+    <constraint>Use only the categories shown in examples: blocking, suggestion, question, praise, nitpick</constraint>
+    <constraint>Priority must be: critical, high, medium, low, none</constraint>
+    <constraint>If a comment contains multiple intents, classify by the most important one</constraint>
+    <constraint>Output valid JSON only, no markdown fences</constraint>
+  </constraints>
+
+  <examples>
+    <example type="standard">
+      <description>Clear blocking issue - security vulnerability</description>
+      <input><![CDATA[
+This SQL query is vulnerable to injection. You're concatenating user input directly into the query string. Use parameterized queries instead.
+      ]]></input>
+      <output><![CDATA[
+{
+  "category": "blocking",
+  "priority": "critical",
+  "requires_change": true,
+  "requires_response": false,
+  "summary": "SQL injection vulnerability - must use parameterized queries"
+}
+      ]]></output>
+      <annotation>
+        Security issues are always blocking and critical priority.
+        No response needed because the fix is clear.
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Suggestion for improvement - not required</description>
+      <input><![CDATA[
+Consider using a Map here instead of an array with .find(). It would be O(1) lookup instead of O(n). Not critical since the array is small, but good practice.
+      ]]></input>
+      <output><![CDATA[
+{
+  "category": "suggestion",
+  "priority": "low",
+  "requires_change": false,
+  "requires_response": false,
+  "summary": "Performance improvement - use Map for O(1) lookup"
+}
+      ]]></output>
+      <annotation>
+        Reviewer explicitly says "not critical" - this is a suggestion.
+        The "good practice" phrasing indicates educational intent, not requirement.
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Question requiring author clarification</description>
+      <input><![CDATA[
+Why did you choose to make this call synchronous? Is there a reason we can't use async/await here? I might be missing some context.
+      ]]></input>
+      <output><![CDATA[
+{
+  "category": "question",
+  "priority": "medium",
+  "requires_change": false,
+  "requires_response": true,
+  "summary": "Clarification needed on synchronous vs async design choice"
+}
+      ]]></output>
+      <annotation>
+        Questions always require response. Priority is medium because
+        the answer might reveal a blocking issue, or might be fine.
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Positive feedback / praise</description>
+      <input><![CDATA[
+Nice refactor! This is much cleaner than the previous implementation. Love how you extracted the validation logic.
+      ]]></input>
+      <output><![CDATA[
+{
+  "category": "praise",
+  "priority": "none",
+  "requires_change": false,
+  "requires_response": false,
+  "summary": "Positive feedback on refactoring quality"
+}
+      ]]></output>
+    </example>
+
+    <example type="edge_case">
+      <description>Mixed comment - question that implies a blocking issue</description>
+      <input><![CDATA[
+Is this handling the case where the user token is expired? I don't see any expiration check, and if we ship this, users will get cryptic errors when their session times out.
+      ]]></input>
+      <output><![CDATA[
+{
+  "category": "blocking",
+  "priority": "high",
+  "requires_change": true,
+  "requires_response": true,
+  "summary": "Missing token expiration handling - may cause user-facing errors"
+}
+      ]]></output>
+      <annotation>
+        Although phrased as a question, this implies missing functionality
+        that would cause user-facing bugs. Classify as blocking, not question.
+        Still requires response to confirm the issue exists.
+      </annotation>
+    </example>
+
+    <example type="negative">
+      <description>Nitpick disguised as blocking - don't over-prioritize</description>
+      <input><![CDATA[
+You should use const instead of let here since you never reassign this variable.
+      ]]></input>
+      <wrong_output><![CDATA[
+{
+  "category": "blocking",
+  "priority": "high",
+  "requires_change": true,
+  "requires_response": false,
+  "summary": "Must use const instead of let"
+}
+      ]]></wrong_output>
+      <correct_output><![CDATA[
+{
+  "category": "nitpick",
+  "priority": "low",
+  "requires_change": false,
+  "requires_response": false,
+  "summary": "Style preference - const vs let"
+}
+      ]]></correct_output>
+      <annotation>
+        const vs let is a stylistic preference, not a functional issue.
+        This is a nitpick - the code works correctly either way.
+        Don't classify style preferences as blocking issues.
+      </annotation>
+    </example>
+  </examples>
+
+  <input><![CDATA[
+I noticed this endpoint doesn't have any rate limiting. If someone spams this with requests, they could overload the database. We should add rate limiting before this goes to production.
+  ]]></input>
+
+  <output_format>
+    Return a single JSON object matching the structure in the examples.
+    No markdown, no explanation, just the JSON.
+  </output_format>
+
+  <checks>
+    <check>Category is one of: blocking, suggestion, question, praise, nitpick</check>
+    <check>Priority is one of: critical, high, medium, low, none</check>
+    <check>JSON is valid and parseable</check>
+    <check>Summary is concise (under 80 characters)</check>
+  </checks>
+</prompt>

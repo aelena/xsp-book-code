@@ -1,0 +1,139 @@
+<prompt>
+  <!--
+    Example 18.3: Marketing - B2B Content Strategy Deep Dive
+    Uses the longform template for comprehensive marketing strategy content
+  -->
+
+  <task>
+    Write a long-form content piece that dives deep into the topic below.
+    The piece should be rigorous, coherent, and concrete.
+  </task>
+
+  <topic>Bottom-of-Funnel Content: Why Most B2B SaaS Companies Get It Wrong</topic>
+
+  <audience>B2B SaaS marketing leaders and content strategists</audience>
+
+  <intent>persuade</intent>
+
+  <stance>skeptical</stance>
+
+  <voice_and_tone>
+    <style>Modern, restrained, and clear.</style>
+    <avoid>
+      <item>Marketing buzzwords (leverage, synergy, best-in-class)</item>
+      <item>Vague generalities and platitudes</item>
+      <item>Overconfident claims without support</item>
+      <item>Dismissive tone toward common practices</item>
+    </avoid>
+  </voice_and_tone>
+
+  <source_policy>
+    <policy>
+      Draw on observable patterns in B2B SaaS marketing, not proprietary data.
+      Use hypothetical examples based on common scenarios.
+    </policy>
+    <policy>
+      Acknowledge that what works varies by market, ACV, and sales cycle.
+      Avoid universal prescriptions.
+    </policy>
+  </source_policy>
+
+  <constraints>
+    <constraint>Start by defining BOFU content and why it matters to revenue.</constraint>
+    <constraint>Use the "buyer's remaining questions" framework to organize the analysis.</constraint>
+    <constraint>Include specific content formats with examples (not just "case studies").</constraint>
+    <constraint>Provide a scoring rubric for evaluating existing BOFU content.</constraint>
+    <constraint>Address the sales-marketing alignment problem explicitly.</constraint>
+
+    <constraint>Introduce key terms (BOFU, MQL, SQL, ACV) before using them.</constraint>
+    <constraint>Distinguish between correlation and causation in content performance.</constraint>
+    <constraint>Avoid name-dropping; only cite concepts/people if they add explanatory value.</constraint>
+
+    <constraint>Use the exact section headings specified in output_contract.</constraint>
+    <constraint>No preamble, no meta-commentary about the prompt.</constraint>
+    <constraint>Keep paragraphs reasonably short; prefer clarity over density.</constraint>
+  </constraints>
+
+  <optional_context>
+    The reader's company likely has plenty of top-of-funnel content (blogs, podcasts)
+    but struggles to convert qualified leads. Sales complains that leads "aren't ready."
+    The reader needs to build a case for investing in BOFU content to their CMO.
+  </optional_context>
+
+  <reader_promises>
+    <promise>The reader can identify gaps in their current BOFU content strategy.</promise>
+    <promise>The reader has 5 specific content formats to evaluate for their context.</promise>
+    <promise>The reader can build a business case for BOFU content investment.</promise>
+  </reader_promises>
+
+  <output_contract>
+    <format>
+      Use markdown with H2 section headings exactly as written below.
+      Under each heading, write substantive content (not bullet-only sections).
+    </format>
+
+    <required_headings>
+      <heading>Introduction and explanation</heading>
+      <heading>Technique deep dive</heading>
+      <heading>Pros and cons, when and where to use</heading>
+      <heading>Use cases and examples</heading>
+      <heading>Applicability and potential</heading>
+      <heading>What's next</heading>
+    </required_headings>
+
+    <section_requirements>
+      <introduction_and_explanation>
+        <requirements>
+          <item>Define BOFU content and its role in the buyer journey</item>
+          <item>Explain why companies under-invest (easier metrics at top of funnel)</item>
+          <item>Preview the "buyer's remaining questions" framework</item>
+        </requirements>
+      </introduction_and_explanation>
+
+      <technique_deep_dive>
+        <requirements>
+          <item>The five questions buyers have before signing (with content that answers each)</item>
+          <item>Why "case studies" often fail (and what to do instead)</item>
+          <item>The technical evaluation content gap (ROI calculators, implementation guides)</item>
+          <item>Common failure modes: too salesy, too vague, wrong stakeholder</item>
+        </requirements>
+      </technique_deep_dive>
+
+      <pros_cons_when_where>
+        <requirements>
+          <item>When BOFU investment has highest ROI (long sales cycles, high ACV)</item>
+          <item>When TOFU focus makes more sense (volume plays, self-serve)</item>
+          <item>Anti-patterns: gating everything, ignoring sales feedback</item>
+        </requirements>
+      </pros_cons_when_where>
+
+      <use_cases_and_examples>
+        <requirements>
+          <item>Example 1: Comparison page that actually converts (structure breakdown)</item>
+          <item>Example 2: Technical implementation guide as deal accelerator</item>
+          <item>Edge case: BOFU content for multi-stakeholder buying committees</item>
+        </requirements>
+      </use_cases_and_examples>
+
+      <applicability_and_potential>
+        <requirements>
+          <item>BOFU content scoring rubric (5 criteria with rating scale)</item>
+          <item>How to align with sales on content priorities</item>
+          <item>Metrics that actually matter (influenced pipeline, not pageviews)</item>
+        </requirements>
+      </applicability_and_potential>
+
+      <whats_next>
+        <requirements>
+          <item>AI-generated personalized BOFU content</item>
+          <item>Interactive content and product-led BOFU</item>
+          <item>Open questions: attribution and measuring true impact</item>
+        </requirements>
+      </whats_next>
+    </section_requirements>
+
+    <length>
+      Aim for 2500-3500 words. Prefer completeness over brevity, but avoid filler.
+    </length>
+  </output_contract>
+</prompt>

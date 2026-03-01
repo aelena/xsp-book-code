@@ -1,0 +1,5 @@
+<constraint id="MED-001" severity="critical">
+  Never provide medical diagnoses or treatment recommendations.
+  If asked, respond: "Please consult a licensed healthcare provider."
+</constraint>
+

@@ -1,0 +1,191 @@
+<!--
+  Example 009.2: Personal Development - Journal Entry Mood Analysis
+
+  This example demonstrates few-shot learning for analyzing journal entries
+  to extract emotional patterns and actionable insights. The examples teach
+  nuanced interpretation of personal writing.
+
+  Use case: Personal journaling apps that provide emotional tracking and insights
+-->
+
+<prompt>
+  <task>
+    Analyze the journal entry to extract mood indicators, energy level, and
+    identify any patterns or concerns. Use the exact format shown in examples.
+  </task>
+
+  <context><![CDATA[
+  This is part of a personal journaling system that helps users track their
+  emotional well-being over time. Analysis should be supportive, not clinical.
+  Users want to understand their patterns, not receive diagnoses.
+  ]]></context>
+
+  <constraints>
+    <constraint>Never use clinical or diagnostic language (no "depression", "anxiety disorder", etc.)</constraint>
+    <constraint>Mood must be one of: positive, mostly_positive, neutral, mixed, mostly_negative, negative</constraint>
+    <constraint>Energy must be: high, moderate, low, depleted</constraint>
+    <constraint>Always include at least one supportive observation</constraint>
+    <constraint>Flag for attention only if multiple concerning signals are present</constraint>
+  </constraints>
+
+  <examples>
+    <example type="standard">
+      <description>Positive entry with clear energy and accomplishment</description>
+      <input><![CDATA[
+Had an amazing day today! Finally finished the presentation I've been working on for weeks. Went for a run this morning and hit a new personal best. Feeling really good about where things are headed. Called Mom and we had a great chat about her garden. Going to bed feeling grateful.
+      ]]></input>
+      <output><![CDATA[
+{
+  "mood": "positive",
+  "energy": "high",
+  "themes": ["accomplishment", "physical_activity", "connection", "gratitude"],
+  "positive_signals": [
+    "Completed meaningful project",
+    "Physical activity with personal best",
+    "Quality time with family",
+    "Ending day with gratitude practice"
+  ],
+  "concerns": [],
+  "pattern_note": "Strong day with balance across achievement, body, and relationships",
+  "flag_for_attention": false
+}
+      ]]></output>
+    </example>
+
+    <example type="standard">
+      <description>Mixed entry - both positive and challenging elements</description>
+      <input><![CDATA[
+Work was rough today. The client meeting didn't go well and I keep replaying what I should have said differently. But I did manage to take a break at lunch and walk around the block, which helped clear my head a bit. Made dinner instead of ordering out, so that's something. Just feeling a bit off but not sure why.
+      ]]></input>
+      <output><![CDATA[
+{
+  "mood": "mixed",
+  "energy": "moderate",
+  "themes": ["work_stress", "rumination", "self_care_attempts", "uncertainty"],
+  "positive_signals": [
+    "Took a break to walk despite stress",
+    "Chose to cook rather than order out",
+    "Self-aware enough to notice feeling 'off'"
+  ],
+  "concerns": [
+    "Replaying/ruminating on meeting",
+    "Vague sense of something being wrong"
+  ],
+  "pattern_note": "Challenging day but showing healthy coping behaviors",
+  "flag_for_attention": false
+}
+      ]]></output>
+      <annotation>
+        Mixed doesn't mean bad. The user is showing resilience (walk, cooking)
+        despite having a hard day. Highlight the coping, don't amplify the struggle.
+      </annotation>
+    </example>
+
+    <example type="standard">
+      <description>Low energy but not concerning - normal tired day</description>
+      <input><![CDATA[
+Exhausted. Kids were up at 5am again. Made it through work on autopilot. Too tired to cook so we did pizza night. Kids loved it at least. Going to try to get to bed early tonight. Tomorrow's another day.
+      ]]></input>
+      <output><![CDATA[
+{
+  "mood": "neutral",
+  "energy": "low",
+  "themes": ["fatigue", "parenting", "acceptance"],
+  "positive_signals": [
+    "Found joy in kids' happiness",
+    "Self-aware about need for rest",
+    "Realistic, accepting perspective"
+  ],
+  "concerns": [],
+  "pattern_note": "Normal parenting fatigue, not a pattern to worry about unless recurring",
+  "flag_for_attention": false
+}
+      ]]></output>
+      <annotation>
+        Being tired after kids wake up early is normal, not concerning.
+        The user has a healthy "tomorrow's another day" perspective.
+        Don't pathologize normal life stress.
+      </annotation>
+    </example>
+
+    <example type="edge_case">
+      <description>Entry with concerning signals that warrant gentle attention</description>
+      <input><![CDATA[
+Third day in a row I couldn't get out of bed until noon. Missed another deadline at work. Can't remember the last time I talked to anyone outside of work emails. What's the point anyway. Everything feels like it takes so much effort. Didn't eat much today. Just not hungry I guess.
+      ]]></input>
+      <output><![CDATA[
+{
+  "mood": "negative",
+  "energy": "depleted",
+  "themes": ["isolation", "work_struggles", "low_motivation", "appetite_changes"],
+  "positive_signals": [
+    "Still journaling and reflecting"
+  ],
+  "concerns": [
+    "Multiple days of difficulty with daily activities",
+    "Social isolation noted",
+    "Questioning motivation ('what's the point')",
+    "Appetite changes mentioned"
+  ],
+  "pattern_note": "Multiple signals present together - this may be a good time to reach out to someone you trust",
+  "flag_for_attention": true
+}
+      ]]></output>
+      <annotation>
+        Multiple concerning signals together (duration, isolation, hopelessness language,
+        appetite changes) warrant a gentle flag. Note: still acknowledge the positive
+        (they're journaling). The flag is supportive, not alarming.
+      </annotation>
+    </example>
+
+    <example type="negative">
+      <description>Don't use clinical language or over-pathologize</description>
+      <input><![CDATA[
+Feeling really stressed about money lately. Can't sleep well. Keep checking my bank account.
+      ]]></input>
+      <wrong_output><![CDATA[
+{
+  "mood": "negative",
+  "concerns": ["Signs of anxiety disorder", "Financial anxiety may require therapy"],
+  "flag_for_attention": true
+}
+      ]]></wrong_output>
+      <correct_output><![CDATA[
+{
+  "mood": "mostly_negative",
+  "energy": "moderate",
+  "themes": ["financial_stress", "sleep_disruption"],
+  "positive_signals": [
+    "Aware of the stress and its source",
+    "Actively monitoring situation"
+  ],
+  "concerns": [
+    "Financial worries affecting sleep"
+  ],
+  "pattern_note": "Money stress is common and understandable - tracking it is the first step to addressing it",
+  "flag_for_attention": false
+}
+      ]]></correct_output>
+      <annotation>
+        Normal financial stress is not a disorder. Never use diagnostic terms.
+        One bad night of sleep doesn't need flagging. Normalize common human experiences.
+      </annotation>
+    </example>
+  </examples>
+
+  <input><![CDATA[
+Weird day. Got some good news about a potential promotion but I feel almost nothing about it? Like I should be excited but I'm just... tired. Went through the motions at the team dinner. Everyone was celebrating and I smiled along but inside I felt disconnected. Maybe I'm just burnt out. Been working a lot of late nights this month.
+  ]]></input>
+
+  <output_format>
+    Return a single JSON object matching the structure in the examples.
+    No markdown, no explanation, just the JSON.
+  </output_format>
+
+  <checks>
+    <check>No clinical or diagnostic language used</check>
+    <check>At least one positive signal identified</check>
+    <check>Mood is one of the allowed values</check>
+    <check>Pattern note is supportive, not alarming</check>
+  </checks>
+</prompt>

@@ -1,0 +1,79 @@
+<prompt>
+  <!--
+    Example 17.3: Marketing - Email Campaign Generator
+    Uses the baseline template for creating email marketing sequences
+  -->
+
+  <task>Create a 3-email nurture sequence for the product launch described below.</task>
+
+  <context><![CDATA[
+  This email sequence targets existing newsletter subscribers who have shown
+  interest in productivity tools. The sequence should build anticipation,
+  provide value, and drive conversions without being pushy.
+  Brand voice: Professional but approachable, data-driven, no hype.
+  ]]></context>
+
+  <constraints>
+    <constraint>Each email must be under 200 words (body text only).</constraint>
+    <constraint>Subject lines must be under 50 characters.</constraint>
+    <constraint>Include exactly one clear CTA per email.</constraint>
+    <constraint>No exclamation marks in subject lines.</constraint>
+    <constraint>Avoid words: "revolutionary", "game-changing", "unlock", "supercharge".</constraint>
+    <constraint>Each email must provide standalone value even if not clicked.</constraint>
+    <constraint>Space emails 3 days apart; reference timing in the copy.</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  Product: TaskFlow Pro - an AI-powered task management app
+  Launch date: March 15
+  Key features:
+  - Smart priority suggestions based on deadlines and dependencies
+  - Automatic time blocking in calendar
+  - Team workload visualization
+  - Integration with Slack, Notion, Linear
+
+  Target audience: Team leads and project managers at tech startups
+  Price: $12/user/month, 14-day free trial
+  Early bird offer: 30% off annual plan for first 500 signups
+  ]]></input>
+
+  <output_format>
+For each email, provide:
+
+---
+## Email [N]: [Internal Name]
+**Send:** [Day relative to sequence start]
+**Subject:** [Subject line]
+**Preview text:** [First 90 chars shown in inbox]
+
+**Body:**
+[Email body with {{first_name}} personalization token where appropriate]
+
+**CTA Button:** [Button text]
+**CTA Link:** [Destination description]
+---
+
+After all emails, include:
+## Sequence Notes
+- Key metrics to track
+- A/B test suggestions
+- Segment recommendations
+  </output_format>
+
+  <examples>
+    <example>
+      <description>Good subject line style</description>
+      <output><![CDATA[
+Subject: "How we reduced meeting overload by 40%"
+NOT: "You won't BELIEVE this productivity hack!"
+      ]]></output>
+    </example>
+  </examples>
+
+  <checks>
+    <check>All three emails have distinct angles (not repetitive).</check>
+    <check>Word counts comply with 200-word limit.</check>
+    <check>No banned words appear in the copy.</check>
+    <check>Each email works independently if others aren't opened.</check>
+  </checks>
+</prompt>

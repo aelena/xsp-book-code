@@ -1,0 +1,20 @@
+prompts/
+├── summarization/
+│   ├── executive-summary.yaml
+│   ├── technical-summary.yaml
+│   └── constraints/
+│       └── shared-compliance.yaml
+├── extraction/
+│   ├── email-parser.yaml
+│   ├── contract-reader.yaml
+│   └── output-schemas/
+│       └── email-schema.json
+├── rewriting/
+│   ├── legal-to-plain.yaml
+│   └── checks/
+│       └── compliance-checks.yaml
+└── shared/
+    ├── vocabulary.md
+    ├── style-guide.md
+    └── test-suite.yaml
+

@@ -1,0 +1,5 @@
+<output_format>
+Return valid JSON with keys: "summary", "risks", "recommendations".
+No extra keys. No markdown fences.
+</output_format>
+

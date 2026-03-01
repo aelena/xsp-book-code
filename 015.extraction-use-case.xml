@@ -1,0 +1,21 @@
+<prompt>
+  <task>Extract structured data from the email.</task>
+
+  <fields>
+    <field name="sender_company" type="string"/>
+    <field name="requested_date" type="string"/>
+    <field name="action_items" type="array[string]"/>
+    <field name="risk_flags" type="array[string]"/>
+  </fields>
+
+  <input><![CDATA[
+  (paste email)
+  ]]></input>
+
+  <output_format>
+Return valid JSON exactly matching the fields above.
+If a field is unknown, use null (or [] for arrays).
+No markdown.
+</output_format>
+</prompt>
+

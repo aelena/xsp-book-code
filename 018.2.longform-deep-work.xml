@@ -1,0 +1,139 @@
+<prompt>
+  <!--
+    Example 18.2: Personal Development - Deep Work in the Age of AI
+    Uses the longform template for comprehensive personal development content
+  -->
+
+  <task>
+    Write a long-form content piece that dives deep into the topic below.
+    The piece should be rigorous, coherent, and concrete.
+  </task>
+
+  <topic>Deep Work Practices: Adapting Cal Newport's Framework for AI-Augmented Knowledge Work</topic>
+
+  <audience>Knowledge workers (developers, writers, analysts) who use AI tools daily</audience>
+
+  <intent>educate</intent>
+
+  <stance>optimistic</stance>
+
+  <voice_and_tone>
+    <style>Modern, restrained, and clear.</style>
+    <avoid>
+      <item>Hype and marketing language</item>
+      <item>Productivity porn and hustle culture framing</item>
+      <item>Vague generalities like "work smarter not harder"</item>
+      <item>Overconfident claims without support</item>
+    </avoid>
+  </voice_and_tone>
+
+  <source_policy>
+    <policy>
+      Reference Cal Newport's Deep Work framework as the foundation.
+      Distinguish between his original concepts and proposed adaptations.
+    </policy>
+    <policy>
+      Use concrete examples from software development, writing, and analysis work.
+      Acknowledge that individual results vary significantly.
+    </policy>
+  </source_policy>
+
+  <constraints>
+    <constraint>Start by defining "deep work" in plain language before extending it.</constraint>
+    <constraint>Use the "attention residue" concept as an organizing framework.</constraint>
+    <constraint>Address the paradox: AI tools both enable and threaten deep work.</constraint>
+    <constraint>Provide specific, actionable protocols (not just principles).</constraint>
+    <constraint>Include time-boxed experiments the reader can try this week.</constraint>
+
+    <constraint>Introduce key terms before using them heavily.</constraint>
+    <constraint>Distinguish between research findings and practitioner wisdom.</constraint>
+    <constraint>Avoid name-dropping; only cite concepts/people if they add explanatory value.</constraint>
+
+    <constraint>Use the exact section headings specified in output_contract.</constraint>
+    <constraint>No preamble, no meta-commentary about the prompt.</constraint>
+    <constraint>Keep paragraphs reasonably short; prefer clarity over density.</constraint>
+  </constraints>
+
+  <optional_context>
+    The reader likely already uses AI tools (ChatGPT, Copilot, etc.) multiple times daily.
+    They feel both more productive and more scattered. They want to preserve the benefits
+    of AI assistance while reclaiming the ability to do sustained, focused work.
+  </optional_context>
+
+  <reader_promises>
+    <promise>The reader understands how AI tools affect attention and can mitigate downsides.</promise>
+    <promise>The reader has 3 specific protocols to try in the next week.</promise>
+    <promise>The reader can design their own AI-augmented deep work practice.</promise>
+  </reader_promises>
+
+  <output_contract>
+    <format>
+      Use markdown with H2 section headings exactly as written below.
+      Under each heading, write substantive content (not bullet-only sections).
+    </format>
+
+    <required_headings>
+      <heading>Introduction and explanation</heading>
+      <heading>Technique deep dive</heading>
+      <heading>Pros and cons, when and where to use</heading>
+      <heading>Use cases and examples</heading>
+      <heading>Applicability and potential</heading>
+      <heading>What's next</heading>
+    </required_headings>
+
+    <section_requirements>
+      <introduction_and_explanation>
+        <requirements>
+          <item>Define deep work vs. shallow work with modern examples</item>
+          <item>Explain why AI changes the deep work equation</item>
+          <item>Preview the "attention residue" framework</item>
+        </requirements>
+      </introduction_and_explanation>
+
+      <technique_deep_dive>
+        <requirements>
+          <item>The attention residue problem with frequent AI queries</item>
+          <item>Batching vs. interleaving AI assistance</item>
+          <item>Protocol: The "AI sprint" method (90-minute focused blocks)</item>
+          <item>Common failure modes: using AI as procrastination, over-delegation</item>
+        </requirements>
+      </technique_deep_dive>
+
+      <pros_cons_when_where>
+        <requirements>
+          <item>When AI assistance enhances deep work (research, outlining)</item>
+          <item>When AI assistance fragments deep work (mid-thought queries)</item>
+          <item>Anti-patterns: AI as thinking crutch, context-switching loops</item>
+        </requirements>
+      </pros_cons_when_where>
+
+      <use_cases_and_examples>
+        <requirements>
+          <item>Example 1: Developer using Copilot without breaking flow</item>
+          <item>Example 2: Writer using ChatGPT for research vs. drafting</item>
+          <item>Edge case: The "AI pair programming" paradox</item>
+        </requirements>
+      </use_cases_and_examples>
+
+      <applicability_and_potential>
+        <requirements>
+          <item>Three protocols to try this week (with specific instructions)</item>
+          <item>Signs you're doing it right vs. signs you need to adjust</item>
+          <item>How to design your own AI-augmented deep work practice</item>
+        </requirements>
+      </applicability_and_potential>
+
+      <whats_next>
+        <requirements>
+          <item>How "agentic AI" will further change the calculus</item>
+          <item>Skills that remain uniquely human (for now)</item>
+          <item>Open questions: memory, creativity, and outsourced cognition</item>
+        </requirements>
+      </whats_next>
+    </section_requirements>
+
+    <length>
+      Aim for 2000-3000 words. Prefer completeness over brevity, but avoid filler.
+    </length>
+  </output_contract>
+</prompt>

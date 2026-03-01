@@ -1,0 +1,20 @@
+<output_contract>
+  <format>
+    Markdown with H2 section headings exactly as written below.
+    Under each heading, write substantive prose (not bullet-only sections).
+  </format>
+
+  <required_sections>
+    <section>Introduction</section>
+    <section>Core mechanism</section>
+    <section>Trade-offs and when to use</section>
+    <section>Examples</section>
+  </required_sections>
+
+  <constraints_on_output>
+    <constraint>No preamble or meta-commentary.</constraint>
+    <constraint>Keep paragraphs under 120 words for readability.</constraint>
+    <constraint>Use clear topic sentences at the start of each paragraph.</constraint>
+  </constraints_on_output>
+</output_contract>
+

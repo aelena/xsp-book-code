@@ -1,0 +1,342 @@
+<!--
+  Example 009.4: Data Extraction - Receipt/Invoice Information Extraction
+
+  This example demonstrates few-shot learning for extracting structured data
+  from unstructured text (OCR output from receipts). The examples teach
+  the model to handle messy, inconsistent real-world data.
+
+  Use case: Expense management systems that process photographed receipts
+-->
+
+<prompt>
+  <task>
+    Extract structured information from the receipt text. Handle OCR errors,
+    missing fields, and inconsistent formatting as shown in examples.
+  </task>
+
+  <context><![CDATA[
+  The input is OCR text from photographed receipts. OCR often produces:
+  - Misspellings and character substitutions (0 for O, l for 1)
+  - Missing or corrupted text
+  - Inconsistent date/time formats
+  - Partial or cut-off information
+
+  The output will be used for expense categorization and reporting.
+  ]]></context>
+
+  <constraints>
+    <constraint>Dates must be normalized to ISO 8601 format (YYYY-MM-DD)</constraint>
+    <constraint>Currency must be extracted and normalized (USD, EUR, GBP, etc.)</constraint>
+    <constraint>Use null for fields that cannot be reliably extracted</constraint>
+    <constraint>Use "uncertain" confidence when making reasonable inferences from corrupted text</constraint>
+    <constraint>Never invent information that isn't in the source</constraint>
+  </constraints>
+
+  <examples>
+    <example type="standard">
+      <description>Clean receipt with all fields present</description>
+      <input><![CDATA[
+STARBUCKS STORE #4521
+1234 MAIN ST
+SAN FRANCISCO, CA 94102
+
+02/15/2024  10:32 AM
+
+GRANDE LATTE           5.75
+BLUEBERRY MUFFIN       3.45
+------------------------
+SUBTOTAL               9.20
+TAX                    0.83
+------------------------
+TOTAL                 10.03
+
+VISA **** 4532
+      ]]></input>
+      <output><![CDATA[
+{
+  "vendor": {
+    "name": "Starbucks",
+    "store_id": "4521",
+    "address": "1234 Main St, San Francisco, CA 94102",
+    "confidence": "high"
+  },
+  "transaction": {
+    "date": "2024-02-15",
+    "time": "10:32",
+    "confidence": "high"
+  },
+  "items": [
+    {"description": "Grande Latte", "amount": 5.75},
+    {"description": "Blueberry Muffin", "amount": 3.45}
+  ],
+  "totals": {
+    "subtotal": 9.20,
+    "tax": 0.83,
+    "total": 10.03,
+    "currency": "USD",
+    "confidence": "high"
+  },
+  "payment": {
+    "method": "Visa",
+    "last_four": "4532",
+    "confidence": "high"
+  },
+  "category_suggestion": "Food & Drink"
+}
+      ]]></output>
+    </example>
+
+    <example type="standard">
+      <description>Receipt with OCR errors and missing fields</description>
+      <input><![CDATA[
+WAL*MART #2847
+BENTONV1LLE AR
+
+O1/O8/24
+
+GROCERIES         $42.17
+CLEANING SUPP      $8.99
+
+T0TAL             $51.16
+
+DEBIT XXXX
+      ]]></input>
+      <output><![CDATA[
+{
+  "vendor": {
+    "name": "Walmart",
+    "store_id": "2847",
+    "address": "Bentonville, AR",
+    "confidence": "high"
+  },
+  "transaction": {
+    "date": "2024-01-08",
+    "time": null,
+    "confidence": "uncertain"
+  },
+  "items": [
+    {"description": "Groceries", "amount": 42.17},
+    {"description": "Cleaning Supplies", "amount": 8.99}
+  ],
+  "totals": {
+    "subtotal": null,
+    "tax": null,
+    "total": 51.16,
+    "currency": "USD",
+    "confidence": "high"
+  },
+  "payment": {
+    "method": "Debit",
+    "last_four": null,
+    "confidence": "uncertain"
+  },
+  "category_suggestion": "Groceries"
+}
+      ]]></output>
+      <annotation>
+        OCR errors handled: "BENTONV1LLE" → "Bentonville", "O1/O8/24" → "2024-01-08",
+        "T0TAL" → recognized as total. Date confidence is "uncertain" because year
+        was inferred (could be 2024 or 2023). Last four digits missing so null.
+      </annotation>
+    </example>
+
+    <example type="edge_case">
+      <description>Foreign currency receipt with different format</description>
+      <input><![CDATA[
+TESCO EXPRESS
+LONDON W1K 4QL
+
+15-MAR-2024 18:47
+
+MEAL DEAL            £3.50
+WATER 500ML          £0.80
+CRISPS               £1.20
+------------------
+VAT                  £0.92
+TOTAL                £5.50
+
+CONTACTLESS
+      ]]></input>
+      <output><![CDATA[
+{
+  "vendor": {
+    "name": "Tesco Express",
+    "store_id": null,
+    "address": "London W1K 4QL",
+    "confidence": "high"
+  },
+  "transaction": {
+    "date": "2024-03-15",
+    "time": "18:47",
+    "confidence": "high"
+  },
+  "items": [
+    {"description": "Meal Deal", "amount": 3.50},
+    {"description": "Water 500ml", "amount": 0.80},
+    {"description": "Crisps", "amount": 1.20}
+  ],
+  "totals": {
+    "subtotal": 4.58,
+    "tax": 0.92,
+    "tax_label": "VAT",
+    "total": 5.50,
+    "currency": "GBP",
+    "confidence": "high"
+  },
+  "payment": {
+    "method": "Contactless",
+    "last_four": null,
+    "confidence": "high"
+  },
+  "category_suggestion": "Food & Drink"
+}
+      ]]></output>
+      <annotation>
+        Currency detected from £ symbol. Date format DD-MMM-YYYY normalized
+        to ISO 8601. VAT instead of "tax" - include tax_label for clarity.
+        Subtotal calculated (total - tax) since not explicitly shown.
+      </annotation>
+    </example>
+
+    <example type="edge_case">
+      <description>Heavily corrupted/partial receipt</description>
+      <input><![CDATA[
+...MAZON
+2/1
+
+ITEM #A8X72...    $24.
+ITEM #B9...       $12.50
+--------
+...TAL           $39.47
+      ]]></input>
+      <output><![CDATA[
+{
+  "vendor": {
+    "name": "Amazon",
+    "store_id": null,
+    "address": null,
+    "confidence": "uncertain"
+  },
+  "transaction": {
+    "date": null,
+    "time": null,
+    "confidence": "low"
+  },
+  "items": [
+    {"description": "Item #A8X72", "amount": 24.00},
+    {"description": "Item #B9", "amount": 12.50}
+  ],
+  "totals": {
+    "subtotal": null,
+    "tax": null,
+    "total": 39.47,
+    "currency": "USD",
+    "confidence": "uncertain"
+  },
+  "payment": {
+    "method": null,
+    "last_four": null,
+    "confidence": "low"
+  },
+  "category_suggestion": "Shopping",
+  "extraction_notes": "Partial receipt - some data could not be extracted"
+}
+      ]]></output>
+      <annotation>
+        When data is significantly corrupted, use "uncertain" or "low" confidence.
+        "2/1" could be Feb 1, Jan 2, or part of something else - use null.
+        Add extraction_notes when quality is poor to flag for human review.
+      </annotation>
+    </example>
+
+    <example type="negative">
+      <description>Don't invent missing data</description>
+      <input><![CDATA[
+COFFEE SHOP
+
+COFFEE
+PASTRY
+
+TOTAL $8.50
+      ]]></input>
+      <wrong_output><![CDATA[
+{
+  "vendor": {
+    "name": "Coffee Shop",
+    "address": "123 Main Street"
+  },
+  "items": [
+    {"description": "Coffee", "amount": 4.25},
+    {"description": "Pastry", "amount": 4.25}
+  ]
+}
+      ]]></wrong_output>
+      <correct_output><![CDATA[
+{
+  "vendor": {
+    "name": "Coffee Shop",
+    "store_id": null,
+    "address": null,
+    "confidence": "low"
+  },
+  "transaction": {
+    "date": null,
+    "time": null,
+    "confidence": "low"
+  },
+  "items": [
+    {"description": "Coffee", "amount": null},
+    {"description": "Pastry", "amount": null}
+  ],
+  "totals": {
+    "subtotal": null,
+    "tax": null,
+    "total": 8.50,
+    "currency": "USD",
+    "confidence": "high"
+  },
+  "payment": {
+    "method": null,
+    "last_four": null,
+    "confidence": "low"
+  },
+  "category_suggestion": "Food & Drink"
+}
+      ]]></correct_output>
+      <annotation>
+        Never invent addresses, split amounts evenly, or guess missing data.
+        Item amounts are unknown - use null, not fabricated splits.
+        Only the total is actually visible in the receipt.
+      </annotation>
+    </example>
+  </examples>
+
+  <input><![CDATA[
+UBER TRIP
+Mar 23 2O24
+
+TRIP FARE          $18.45
+BOOKING FEE         $2.50
+SURGE               $4.30
+-----------
+SUBTOT             $25.25
+TOTAL              $25.25
+
+CHG VISA ...8821
+
+PICKUP: 345 MARKET ST
+DROP: SFO TERMINAL 2
+  ]]></input>
+
+  <output_format>
+    Return a single JSON object matching the structure in the examples.
+    Include all fields even if null. No markdown fences.
+  </output_format>
+
+  <checks>
+    <check>All dates in ISO 8601 format</check>
+    <check>No fabricated data - null for unknown fields</check>
+    <check>Confidence levels assigned appropriately</check>
+    <check>Currency normalized to ISO code</check>
+  </checks>
+</prompt>

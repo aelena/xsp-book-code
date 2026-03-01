@@ -1,0 +1,12 @@
+{
+  "prompt_id": "medical_qa_v3",
+  "prompt_version": "v3.2.1",
+  "constraints_applied": ["MED-001", "PII-005", "CONFIDENCE-003"],
+  "output_validation": {
+    "constraint_MED-001": "passed",
+    "constraint_PII-005": "passed",
+    "constraint_CONFIDENCE-003": "failed"
+  },
+  "timestamp": "2025-12-17T10:30:00Z"
+}
+

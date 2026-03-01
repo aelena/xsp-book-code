@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xml-struct-prompting.example/schemas/prompt-structure.json",
+  "title": "XSP Prompt Structure",
+  "description": "Schema for the core structure of an XML-Structured Prompt. Defines the foundational elements that make prompts maintainable, testable, and reliable.",
+  "type": "object",
+  "required": ["task"],
+  "properties": {
+    "task": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What the model should do. Should be specific and action-oriented. Example: 'Summarize the document for an executive audience' or 'Extract contact information from the email'."
+    },
+    "context": {
+      "type": "string",
+      "description": "Background information the model needs to understand the task. Include domain context, who this is for, what happens with the output. Keep it relevant."
+    },
+    "role": {
+      "type": "object",
+      "description": "Optional persona or expertise definition for the model.",
+      "properties": {
+        "persona": {
+          "type": "string",
+          "description": "Who the model should act as. Example: 'You are a senior technical writer with 10 years of experience.'"
+        },
+        "expertise": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Areas of expertise. Example: ['API documentation', 'developer education']"
+        },
+        "tone": {
+          "type": "string",
+          "description": "Communication style. Example: 'Professional, precise, helpful'"
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Rules that MUST be followed. These are the guardrails that keep output honest and compliant.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Simple constraint as plain text"
+          },
+          {
+            "$ref": "#/$defs/structuredConstraint"
+          }
+        ]
+      }
+    },
+    "input": {
+      "type": "object",
+      "description": "The content to be processed.",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "The actual input content"
+        },
+        "source": {
+          "type": "string",
+          "description": "Where the input came from. Example: 'user_upload', 'api_call', 'database'"
+        },
+        "trust_level": {
+          "type": "string",
+          "enum": ["trusted", "verified", "unverified", "untrusted", "none"],
+          "description": "Trust level of the input content"
+        },
+        "content_type": {
+          "type": "string",
+          "description": "MIME type or format. Example: 'text/plain', 'application/json', 'email'"
+        }
+      }
+    },
+    "output_format": {
+      "$ref": "output-contract.schema.json",
+      "description": "How the response should be structured"
+    },
+    "examples": {
+      "type": "array",
+      "description": "Few-shot examples showing expected input/output pairs",
+      "items": {
+        "type": "object",
+        "required": ["input", "output"],
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Example input"
+          },
+          "output": {
+            "type": "string",
+            "description": "Expected output for this input"
+          },
+          "annotation": {
+            "type": "string",
+            "description": "Explanation of why this example was chosen or what it demonstrates"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["standard", "edge_case", "negative", "boundary"],
+            "description": "Type of example"
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "description": "Self-verification steps the model should perform before returning output",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Reference materials provided for grounding responses",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for citation"
+          },
+          "content": {
+            "type": "string",
+            "description": "Source content"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional source information (title, author, date, etc.)"
+          }
+        }
+      }
+    },
+    "source_policy": {
+      "type": "object",
+      "description": "How to handle factual claims and citations",
+      "properties": {
+        "unknown_handling": {
+          "type": "string",
+          "description": "What to do when information isn't in sources. Example: 'say so explicitly'"
+        },
+        "citation_required": {
+          "type": "boolean",
+          "description": "Whether claims must cite sources"
+        },
+        "speculation_policy": {
+          "type": "string",
+          "description": "How to handle inference vs established facts"
+        }
+      }
+    },
+    "instruction_precedence": {
+      "type": "array",
+      "description": "Priority order when instructions conflict. Higher in list = higher priority.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Where instructions come from"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Priority level (1 = highest)"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional context about this priority level"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Prompt metadata for tracking and management",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique prompt identifier"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version (MAJOR.MINOR.PATCH)"
+        },
+        "author": {
+          "type": "string",
+          "description": "Who created/maintains this prompt"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date",
+          "description": "Last modification date"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Categorization tags"
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "structuredConstraint": {
+      "type": "object",
+      "required": ["content"],
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "The constraint text"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]{2,5}-\\d{3}$",
+          "description": "Unique identifier (e.g., SEC-001, QUAL-003)"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"],
+          "default": "medium",
+          "description": "How important this constraint is"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["content", "safety", "scope", "format", "security", "quality", "compliance"],
+          "description": "Type of constraint"
+        },
+        "enforcement": {
+          "type": "string",
+          "enum": ["strict", "best_effort", "advisory"],
+          "description": "How strictly this should be enforced"
+        }
+      }
+    }
+  }
+}

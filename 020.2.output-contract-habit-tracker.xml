@@ -1,0 +1,143 @@
+<prompt>
+  <!--
+    Example 20.2: Personal Development - Weekly Review Output Contract
+    Demonstrates a structured output contract for personal habit/goal tracking analysis
+  -->
+
+  <task>Analyze the weekly habit tracking data and generate a structured progress report.</task>
+
+  <context><![CDATA[
+  This analysis is part of a personal productivity system. The user logs their
+  habits daily and wants an objective weekly assessment. The output feeds into
+  a dashboard that tracks trends over time, so consistent structure is essential.
+  ]]></context>
+
+  <constraints>
+    <constraint>Base all assessments on the provided data only.</constraint>
+    <constraint>Do not make assumptions about reasons for missed habits.</constraint>
+    <constraint>Keep recommendations specific and actionable.</constraint>
+    <constraint>Be encouraging but honest; do not minimize poor performance.</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  Week: Jan 13-19, 2025
+  Goals:
+  - Exercise: 5 days/week (completed: Mon, Wed, Sat = 3 days)
+  - Reading: 30 min/day (completed: Mon, Tue, Wed, Thu, Fri = 5 days)
+  - Meditation: 10 min/day (completed: Mon only = 1 day)
+  - No social media before noon (completed: Mon, Tue, Wed = 3 days)
+  - Weekly review: 1x/week (completed: Yes)
+  ]]></input>
+
+  <output_contract>
+    <format>
+      Return valid JSON matching the schema below.
+      No additional commentary outside the JSON structure.
+    </format>
+
+    <schema><![CDATA[
+{
+  "week": "<string: date range>",
+  "overall_score": <integer: 0-100>,
+  "overall_trend": "<string: improving | stable | declining>",
+  "habits": [
+    {
+      "name": "<string>",
+      "target": "<string: e.g., '5 days/week'>",
+      "achieved": "<string: e.g., '3 days'>",
+      "completion_rate": <integer: percentage 0-100>,
+      "status": "<string: exceeded | met | partial | missed>",
+      "streak_info": "<string: current streak status or null>"
+    }
+  ],
+  "wins": [
+    "<string: specific positive observations, max 3>"
+  ],
+  "focus_areas": [
+    {
+      "habit": "<string: habit name>",
+      "issue": "<string: what went wrong>",
+      "recommendation": "<string: specific action to try next week>"
+    }
+  ],
+  "next_week_priority": "<string: single most important focus>"
+}
+    ]]></schema>
+
+    <constraints_on_output>
+      <constraint>Overall score must be weighted average of completion rates.</constraint>
+      <constraint>Habits array must include all habits from input, in order.</constraint>
+      <constraint>Status thresholds: exceeded (>100%), met (90-100%), partial (50-89%), missed (&lt;50%).</constraint>
+      <constraint>Focus areas limited to max 2; prioritize lowest performers.</constraint>
+      <constraint>Recommendations must be specific actions, not vague advice.</constraint>
+    </constraints_on_output>
+
+    <example_output><![CDATA[
+{
+  "week": "Jan 13-19, 2025",
+  "overall_score": 58,
+  "overall_trend": "stable",
+  "habits": [
+    {
+      "name": "Exercise",
+      "target": "5 days/week",
+      "achieved": "3 days",
+      "completion_rate": 60,
+      "status": "partial",
+      "streak_info": null
+    },
+    {
+      "name": "Reading",
+      "target": "30 min/day",
+      "achieved": "5 days",
+      "completion_rate": 71,
+      "status": "partial",
+      "streak_info": "5-day streak (Mon-Fri)"
+    },
+    {
+      "name": "Meditation",
+      "target": "10 min/day",
+      "achieved": "1 day",
+      "completion_rate": 14,
+      "status": "missed",
+      "streak_info": null
+    },
+    {
+      "name": "No social media before noon",
+      "target": "7 days/week",
+      "achieved": "3 days",
+      "completion_rate": 43,
+      "status": "missed",
+      "streak_info": null
+    },
+    {
+      "name": "Weekly review",
+      "target": "1x/week",
+      "achieved": "1x",
+      "completion_rate": 100,
+      "status": "met",
+      "streak_info": null
+    }
+  ],
+  "wins": [
+    "Reading habit maintained 5-day weekday streak",
+    "Completed weekly review as planned",
+    "Exercise happened 3x despite not meeting full target"
+  ],
+  "focus_areas": [
+    {
+      "habit": "Meditation",
+      "issue": "Only completed once; likely deprioritized when busy",
+      "recommendation": "Stack meditation immediately after morning coffee before checking phone"
+    },
+    {
+      "habit": "No social media before noon",
+      "issue": "Failed more than half the week",
+      "recommendation": "Use app blocker (e.g., Freedom) with scheduled blocks until noon"
+    }
+  ],
+  "next_week_priority": "Rebuild meditation consistency - aim for 4+ days"
+}
+    ]]></example_output>
+  </output_contract>
+</prompt>

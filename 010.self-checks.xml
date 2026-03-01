@@ -1,0 +1,5 @@
+<checks>
+  <check>Ensure all constraints are satisfied.</check>
+  <check>Ensure the JSON is valid.</check>
+</checks>
+

@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xml-struct-prompting.example/schemas/output-contract.json",
+  "title": "XSP Output Contract",
+  "description": "Schema for defining output contracts - the specification of what the model must return. Output contracts turn 'best-effort writing' into 'machine-readable deliverables.'",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["prose", "json", "markdown", "structured", "hybrid"],
+      "description": "The primary output format type"
+    },
+    "format": {
+      "type": "object",
+      "description": "Detailed format specification",
+      "properties": {
+        "markup": {
+          "type": "string",
+          "enum": ["none", "markdown", "html", "xml"],
+          "description": "What markup language to use, if any"
+        },
+        "code_blocks": {
+          "type": "boolean",
+          "description": "Whether to use fenced code blocks"
+        },
+        "heading_style": {
+          "type": "string",
+          "enum": ["h1", "h2", "h3", "none"],
+          "description": "What heading level to use for sections"
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "description": "For JSON/structured output: the expected schema. Can be a JSON Schema definition or a simplified field list.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["object", "array"],
+          "description": "Root type of the output"
+        },
+        "properties": {
+          "type": "object",
+          "description": "Field definitions (for object type)",
+          "additionalProperties": {
+            "$ref": "#/$defs/fieldDefinition"
+          }
+        },
+        "items": {
+          "$ref": "#/$defs/fieldDefinition",
+          "description": "Item schema (for array type)"
+        },
+        "required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of required field names"
+        }
+      }
+    },
+    "required_sections": {
+      "type": "array",
+      "description": "For prose/markdown output: sections that must be included",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Section heading"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "heading": {
+                "type": "string",
+                "description": "Exact heading text to use"
+              },
+              "requirements": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "What this section must contain"
+              },
+              "min_length": {
+                "type": "integer",
+                "description": "Minimum word count for this section"
+              },
+              "max_length": {
+                "type": "integer",
+                "description": "Maximum word count for this section"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "length": {
+      "type": "object",
+      "description": "Length constraints for the output",
+      "properties": {
+        "min_words": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum word count"
+        },
+        "max_words": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum word count"
+        },
+        "ideal_range": {
+          "type": "string",
+          "description": "Preferred range (e.g., '2500-3500')"
+        },
+        "min_characters": {
+          "type": "integer",
+          "description": "Minimum character count"
+        },
+        "max_characters": {
+          "type": "integer",
+          "description": "Maximum character count"
+        },
+        "flexibility": {
+          "type": "string",
+          "enum": ["strict", "preferred", "guideline"],
+          "description": "How strictly to enforce length limits"
+        }
+      }
+    },
+    "section_balance": {
+      "type": "object",
+      "description": "Balance requirements across sections",
+      "properties": {
+        "max_section_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "No section should exceed this percentage of total"
+        },
+        "min_section_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Every section should be at least this percentage"
+        },
+        "distribution": {
+          "type": "object",
+          "description": "Target percentage for each section",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^\\d+-\\d+%$"
+          }
+        }
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "description": "Elements that must NOT appear in output",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        "No preamble or meta-commentary",
+        "No markdown tables",
+        "No extra JSON keys beyond schema",
+        "No emojis"
+      ]
+    },
+    "required_elements": {
+      "type": "array",
+      "description": "Elements that MUST appear in output",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        "Include at least 2 examples",
+        "End with actionable next steps",
+        "Include confidence score"
+      ]
+    },
+    "null_handling": {
+      "type": "string",
+      "enum": ["null", "omit", "empty_string", "placeholder"],
+      "description": "How to handle missing/unknown values in structured output"
+    },
+    "validation_rules": {
+      "type": "array",
+      "description": "Custom validation rules to apply",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field or section this rule applies to"
+          },
+          "rule": {
+            "type": "string",
+            "description": "The validation rule"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"],
+            "description": "Whether violations are errors or warnings"
+          }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "description": "Example outputs showing expected format",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "What this example demonstrates"
+          },
+          "output": {
+            "type": "string",
+            "description": "The example output"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "fieldDefinition": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["string", "number", "integer", "boolean", "array", "object", "null"],
+          "description": "Data type of this field"
+        },
+        "description": {
+          "type": "string",
+          "description": "What this field contains"
+        },
+        "enum": {
+          "type": "array",
+          "description": "Allowed values (for string type)"
+        },
+        "format": {
+          "type": "string",
+          "description": "Format hint (e.g., 'date', 'email', 'uri')"
+        },
+        "items": {
+          "$ref": "#/$defs/fieldDefinition",
+          "description": "Item schema (for array type)"
+        },
+        "properties": {
+          "type": "object",
+          "description": "Nested properties (for object type)",
+          "additionalProperties": {
+            "$ref": "#/$defs/fieldDefinition"
+          }
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "Whether this field can be null"
+        },
+        "default": {
+          "description": "Default value if not provided"
+        }
+      }
+    }
+  }
+}

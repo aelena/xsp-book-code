@@ -1,0 +1,178 @@
+<!--
+  015.1 Information Extraction with PII Redaction
+
+  A variant of 015.extraction-use-case.xml that demonstrates how to extract
+  structured data from documents while ensuring PII is handled appropriately.
+
+  Use case: Extract actionable information from customer support emails
+  without exposing customer PII in the extracted output.
+
+  Key patterns:
+  - Extract business-relevant fields (dates, categories, actions)
+  - Redact or generalize fields that would contain PII
+  - Use counts instead of lists for people-related data
+  - Flag when human review may be needed due to PII complexity
+-->
+
+<prompt>
+  <task>
+    Extract structured data from the customer support email.
+    Preserve business-relevant information while redacting all PII.
+  </task>
+
+  <context>
+    You are processing customer support emails for a ticketing system.
+    Extracted data will be used for routing, prioritization, and analytics.
+    Output will be stored in logs and dashboards accessible to multiple teams.
+    Therefore, NO personally identifiable information should appear in the output.
+  </context>
+
+  <pii_policy>
+    <policy>Never output: names, email addresses, phone numbers, account numbers,
+      addresses, or any other identifying information.</policy>
+    <policy>For people mentioned, output only the COUNT and their ROLE/RELATIONSHIP,
+      not names or identifiers.</policy>
+    <policy>For contact methods, output only that they were PROVIDED, not the values.</policy>
+    <policy>If a direct quote is needed, paraphrase to remove any identifiers.</policy>
+  </pii_policy>
+
+  <fields>
+    <!-- Business fields - extract directly -->
+    <field name="ticket_category" type="string">
+      Primary category: billing, technical, account_access, shipping, feedback, other
+    </field>
+    <field name="subcategory" type="string">
+      More specific classification within the category
+    </field>
+    <field name="urgency" type="string">
+      low, medium, high, critical - based on language and situation
+    </field>
+    <field name="sentiment" type="string">
+      positive, neutral, frustrated, angry
+    </field>
+    <field name="dates_mentioned" type="array[object]">
+      Any dates referenced: {"date": "YYYY-MM-DD or description", "context": "what the date refers to"}
+    </field>
+    <field name="monetary_amounts" type="array[object]">
+      Any amounts mentioned: {"amount": "$X.XX", "context": "what the amount refers to"}
+    </field>
+
+    <!-- PII-sensitive fields - redact/generalize -->
+    <field name="customer_type" type="string">
+      Inferred type: individual, business, unknown (NOT the customer's name or ID)
+    </field>
+    <field name="people_mentioned_count" type="integer">
+      Count of distinct people mentioned (NOT their names)
+    </field>
+    <field name="contact_methods_provided" type="array[string]">
+      Types only: ["email", "phone", "address"] - NOT the actual values
+    </field>
+    <field name="account_referenced" type="boolean">
+      Whether an account number/ID was mentioned (NOT the number itself)
+    </field>
+    <field name="order_referenced" type="boolean">
+      Whether an order number was mentioned (NOT the number itself)
+    </field>
+
+    <!-- Action fields -->
+    <field name="action_items" type="array[string]">
+      Required actions, paraphrased to remove any PII
+    </field>
+    <field name="response_type_needed" type="string">
+      What kind of response: refund, technical_help, account_recovery, information, escalation
+    </field>
+    <field name="requires_human_review" type="boolean">
+      True if the request is complex or sensitive enough to need human attention
+    </field>
+    <field name="human_review_reason" type="string">
+      Why human review is needed, if applicable
+    </field>
+  </fields>
+
+  <constraints>
+    <constraint priority="critical">Output must contain ZERO PII - no names, emails, phones,
+      addresses, account numbers, order numbers, or other identifiers.</constraint>
+    <constraint priority="critical">Use placeholders for any references: "the customer",
+      "the account", "the order" - never actual values.</constraint>
+    <constraint priority="high">All action_items must be paraphrased to remove identifiers.
+      Example: "Call John at 555-1234" becomes "Customer requests callback".</constraint>
+    <constraint>If extracting a quote, replace names with "[customer]" or "[representative]".</constraint>
+  </constraints>
+
+  <input><![CDATA[
+From: sarah.johnson@example.com
+To: support@company.com
+Subject: Double charge on my account - URGENT
+
+Hi,
+
+My name is Sarah Johnson and I'm writing because I was charged twice for order #ORD-98765
+placed on January 5th. Each charge was $149.99 so I've been overcharged $149.99.
+
+My account number is ACC-12345678. I've been a customer since 2019 and this has never
+happened before. I spoke with Mike from your team last week (reference #TKT-456) but
+the issue still isn't resolved.
+
+Please refund the duplicate charge to my card ending in 4532 ASAP. You can reach me
+at 555-867-5309 or at this email.
+
+This is really frustrating as I'm a loyal customer.
+
+Thanks,
+Sarah Johnson
+123 Main Street
+Springfield, IL 62701
+  ]]></input>
+
+  <output_format>
+    Return valid JSON exactly matching the field specifications above.
+    Verify that NO actual PII values appear anywhere in the output.
+    Use null for fields where information is not available.
+  </output_format>
+
+  <checks>
+    <check>Verify no email addresses (containing @) appear in output</check>
+    <check>Verify no phone numbers (digit sequences 7+) appear in output</check>
+    <check>Verify no names appear in output (check against names in input)</check>
+    <check>Verify no account/order numbers appear in output</check>
+    <check>Verify action_items are paraphrased, not quoted directly</check>
+  </checks>
+</prompt>
+
+<!--
+  EXPECTED OUTPUT (example):
+
+  {
+    "ticket_category": "billing",
+    "subcategory": "duplicate_charge",
+    "urgency": "high",
+    "sentiment": "frustrated",
+    "dates_mentioned": [
+      {"date": "2025-01-05", "context": "order placement date"},
+      {"date": "last week", "context": "previous support contact"}
+    ],
+    "monetary_amounts": [
+      {"amount": "$149.99", "context": "order amount / duplicate charge amount"}
+    ],
+    "customer_type": "individual",
+    "people_mentioned_count": 2,
+    "contact_methods_provided": ["email", "phone", "address"],
+    "account_referenced": true,
+    "order_referenced": true,
+    "action_items": [
+      "Process refund for duplicate charge",
+      "Follow up on previous ticket reference",
+      "Customer requests callback or email response"
+    ],
+    "response_type_needed": "refund",
+    "requires_human_review": false,
+    "human_review_reason": null
+  }
+
+  NOTE: The output contains:
+  - Business information (category, dates, amounts)
+  - Generalized person data (count, not names)
+  - Contact type indicators (not actual values)
+  - Reference flags (not actual numbers)
+  - Paraphrased actions (no quoted PII)
+-->

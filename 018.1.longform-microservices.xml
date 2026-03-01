@@ -1,0 +1,137 @@
+<prompt>
+  <!--
+    Example 18.1: Technical - Deep Dive on Microservices Architecture
+    Uses the longform template for comprehensive technical content
+  -->
+
+  <task>
+    Write a long-form content piece that dives deep into the topic below.
+    The piece should be rigorous, coherent, and concrete.
+  </task>
+
+  <topic>Microservices Architecture: When Monoliths Make More Sense</topic>
+
+  <audience>Technical leaders and senior engineers evaluating architecture decisions</audience>
+
+  <intent>compare</intent>
+
+  <stance>dialectical</stance>
+
+  <voice_and_tone>
+    <style>Modern, restrained, and clear.</style>
+    <avoid>
+      <item>Hype and marketing language</item>
+      <item>Vague generalities</item>
+      <item>Overconfident claims without support</item>
+      <item>Dismissive statements about either approach</item>
+    </avoid>
+  </voice_and_tone>
+
+  <source_policy>
+    <policy>
+      Draw on well-known industry examples (Netflix, Amazon, Segment's return to monolith).
+      Present these as illustrative cases, not definitive proof.
+    </policy>
+    <policy>
+      Distinguish between theoretical benefits and observed outcomes in practice.
+    </policy>
+  </source_policy>
+
+  <constraints>
+    <constraint>Start by defining both microservices and monoliths in plain language.</constraint>
+    <constraint>Use the "Total Cost of Ownership" framework to organize trade-offs.</constraint>
+    <constraint>Include both team-size and technical complexity as decision factors.</constraint>
+    <constraint>Provide a concrete decision tree or rubric for choosing between approaches.</constraint>
+    <constraint>Address the "distributed monolith" anti-pattern explicitly.</constraint>
+
+    <constraint>Introduce key terms (service mesh, eventual consistency, etc.) before using them.</constraint>
+    <constraint>Distinguish between: (a) established facts, (b) reasonable inference, (c) speculation.</constraint>
+    <constraint>Avoid name-dropping; only cite concepts/people if they add explanatory value.</constraint>
+
+    <constraint>Use the exact section headings specified in output_contract.</constraint>
+    <constraint>No preamble, no meta-commentary about the prompt.</constraint>
+    <constraint>Keep paragraphs reasonably short; prefer clarity over density.</constraint>
+  </constraints>
+
+  <optional_context>
+    Focus on organizations with 5-50 engineers, where the decision is most consequential.
+    The reader is likely facing pressure to adopt microservices and needs ammunition
+    for a nuanced conversation with stakeholders.
+  </optional_context>
+
+  <reader_promises>
+    <promise>The reader can articulate specific conditions where monoliths outperform microservices.</promise>
+    <promise>The reader can identify warning signs of premature microservice adoption.</promise>
+    <promise>The reader has a framework for making the decision in their own context.</promise>
+  </reader_promises>
+
+  <output_contract>
+    <format>
+      Use markdown with H2 section headings exactly as written below.
+      Under each heading, write substantive content (not bullet-only sections).
+    </format>
+
+    <required_headings>
+      <heading>Introduction and explanation</heading>
+      <heading>Technique deep dive</heading>
+      <heading>Pros and cons, when and where to use</heading>
+      <heading>Use cases and examples</heading>
+      <heading>Applicability and potential</heading>
+      <heading>What's next</heading>
+    </required_headings>
+
+    <section_requirements>
+      <introduction_and_explanation>
+        <requirements>
+          <item>Define microservices and monoliths without jargon</item>
+          <item>Explain why this decision matters (cost, velocity, reliability)</item>
+          <item>Preview the Total Cost of Ownership framework</item>
+        </requirements>
+      </introduction_and_explanation>
+
+      <technique_deep_dive>
+        <requirements>
+          <item>Break down operational costs: deployment, monitoring, debugging</item>
+          <item>Describe the "distributed monolith" failure mode</item>
+          <item>Walk through a realistic migration scenario end-to-end</item>
+        </requirements>
+      </technique_deep_dive>
+
+      <pros_cons_when_where>
+        <requirements>
+          <item>Team size thresholds (when coordination cost exceeds benefit)</item>
+          <item>Technical complexity thresholds (when distribution adds more than it solves)</item>
+          <item>Anti-patterns: resume-driven development, premature optimization</item>
+        </requirements>
+      </pros_cons_when_where>
+
+      <use_cases_and_examples>
+        <requirements>
+          <item>Example 1: Successful microservices (what made it work)</item>
+          <item>Example 2: Failed migration / return to monolith (what went wrong)</item>
+          <item>Edge case: The modular monolith as middle ground</item>
+        </requirements>
+      </use_cases_and_examples>
+
+      <applicability_and_potential>
+        <requirements>
+          <item>Decision rubric: 5 questions to answer before choosing</item>
+          <item>Where monolith-first is the dominant strategy</item>
+          <item>What capabilities microservices unlock that can't be achieved otherwise</item>
+        </requirements>
+      </applicability_and_potential>
+
+      <whats_next>
+        <requirements>
+          <item>Emerging patterns: modular monoliths, serverless, cell-based architecture</item>
+          <item>Next steps for a team currently on a monolith</item>
+          <item>Open questions: how AI-assisted development changes the calculus</item>
+        </requirements>
+      </whats_next>
+    </section_requirements>
+
+    <length>
+      Aim for 2500-3500 words. Prefer completeness over brevity, but avoid filler.
+    </length>
+  </output_contract>
+</prompt>

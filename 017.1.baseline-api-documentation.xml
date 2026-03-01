@@ -1,0 +1,72 @@
+<prompt>
+  <!--
+    Example 17.1: Technical - API Documentation Generator
+    Uses the baseline template for generating API endpoint documentation
+  -->
+
+  <task>Generate comprehensive API documentation for the endpoint described below.</task>
+
+  <context><![CDATA[
+  This documentation will be included in a developer portal used by third-party
+  integrators. The audience ranges from junior developers to senior architects.
+  Documentation should follow OpenAPI-style conventions where applicable.
+  ]]></context>
+
+  <constraints>
+    <constraint>Include request and response examples with realistic data.</constraint>
+    <constraint>Document all possible HTTP status codes and their meanings.</constraint>
+    <constraint>Explain authentication requirements clearly.</constraint>
+    <constraint>Note any rate limits or usage restrictions.</constraint>
+    <constraint>Use consistent formatting for parameter tables.</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  Endpoint: POST /api/v2/orders
+  Purpose: Create a new order in the system
+  Auth: Bearer token (OAuth 2.0)
+  Rate limit: 100 requests per minute
+
+  Required fields:
+  - customer_id (string, UUID)
+  - items (array of objects with product_id, quantity, unit_price)
+  - shipping_address (object with street, city, state, postal_code, country)
+
+  Optional fields:
+  - notes (string, max 500 chars)
+  - priority (enum: standard, express, overnight)
+  - discount_code (string)
+
+  Returns: Order object with generated order_id, status, estimated_delivery
+  ]]></input>
+
+  <output_format>
+Return documentation in markdown with these sections:
+1. Endpoint Overview (method, path, description)
+2. Authentication
+3. Request Parameters (table format)
+4. Request Body Schema
+5. Example Request
+6. Response Schema
+7. Example Response
+8. Error Codes (table format)
+9. Rate Limiting
+No preamble. Start directly with the first heading.
+  </output_format>
+
+  <examples>
+    <example>
+      <description>Parameter table format</description>
+      <output><![CDATA[
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| customer_id | string (UUID) | Yes | Unique customer identifier |
+      ]]></output>
+    </example>
+  </examples>
+
+  <checks>
+    <check>All required fields from input are documented.</check>
+    <check>Example request includes valid JSON.</check>
+    <check>All mentioned status codes have descriptions.</check>
+  </checks>
+</prompt>

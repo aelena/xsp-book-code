@@ -1,0 +1,406 @@
+<!--
+  024. Prompt Versioning Template
+
+  Production prompts need version control just like code. This template demonstrates:
+  - Semantic versioning adapted for prompts
+  - Structured changelog format
+  - A/B testing annotations
+  - Rollback markers for safe deployments
+
+  Why version prompts?
+  - Track what changed and why
+  - Enable safe rollbacks when new versions underperform
+  - Support A/B testing with clear variant identification
+  - Maintain audit trails for compliance
+  - Enable team collaboration without conflicts
+-->
+
+<!--
+  ============================================================================
+  SEMANTIC VERSIONING FOR PROMPTS
+  ============================================================================
+
+  Adapted from SemVer (MAJOR.MINOR.PATCH), but with prompt-specific meanings:
+
+  MAJOR (X.0.0) - Breaking changes
+    - Output schema changes (fields added/removed/renamed)
+    - Behavior changes that affect downstream systems
+    - Constraint changes that significantly alter responses
+    - Changes requiring consumer updates
+
+  MINOR (0.X.0) - Backward-compatible improvements
+    - New optional output fields
+    - Additional examples added
+    - Constraint refinements that don't change output structure
+    - Performance/quality improvements
+
+  PATCH (0.0.X) - Fixes and clarifications
+    - Typo corrections
+    - Wording clarifications
+    - Edge case handling improvements
+    - No functional change to output
+
+  Examples:
+    1.0.0 → 2.0.0: Changed output from JSON to markdown (breaking)
+    1.0.0 → 1.1.0: Added confidence scores to output (new feature)
+    1.0.0 → 1.0.1: Fixed typo in constraint (no behavior change)
+-->
+
+<prompt_manifest>
+  <!--
+    METADATA BLOCK
+    This section identifies the prompt and its current state.
+    Include this at the top of every versioned prompt.
+  -->
+  <metadata>
+    <prompt_id>customer-intent-classifier</prompt_id>
+    <version>2.3.1</version>
+    <status>production</status> <!-- draft | review | staging | production | deprecated -->
+    <created>2024-06-15</created>
+    <last_modified>2025-01-17</last_modified>
+    <owner>support-automation-team</owner>
+    <reviewers>
+      <reviewer>jane.smith@company.com</reviewer>
+      <reviewer>bob.jones@company.com</reviewer>
+    </reviewers>
+    <tags>
+      <tag>classification</tag>
+      <tag>customer-support</tag>
+      <tag>production-critical</tag>
+    </tags>
+  </metadata>
+
+  <!--
+    ============================================================================
+    CHANGELOG
+    ============================================================================
+    Document all changes with context. Future you (and your team) will thank you.
+  -->
+  <changelog>
+    <release version="2.3.1" date="2025-01-17" type="patch">
+      <summary>Fixed edge case in refund detection</summary>
+      <changes>
+        <change type="fix">
+          <description>Messages mentioning "refund" in quoted text were incorrectly classified as refund requests</description>
+          <before>Customer quoting policy: "No refunds after 30 days" → classified as billing/refund</before>
+          <after>Now correctly classified based on customer's actual intent, not quoted text</after>
+          <affected_section>examples/edge_case</affected_section>
+        </change>
+      </changes>
+      <testing>
+        <test_cases_added>3</test_cases_added>
+        <regression_suite>passed</regression_suite>
+      </testing>
+    </release>
+
+    <release version="2.3.0" date="2025-01-10" type="minor">
+      <summary>Added confidence scoring and multi-intent support</summary>
+      <changes>
+        <change type="feature">
+          <description>Output now includes confidence score (0.0-1.0)</description>
+          <migration>Consumers should handle new "confidence" field; defaults to 1.0 if not parsed</migration>
+        </change>
+        <change type="feature">
+          <description>Secondary intent field for multi-topic messages</description>
+          <migration>Optional field; null when single intent detected</migration>
+        </change>
+        <change type="improvement">
+          <description>Added 5 new few-shot examples for ambiguous cases</description>
+        </change>
+      </changes>
+      <metrics_impact>
+        <metric name="classification_accuracy">+4.2%</metric>
+        <metric name="escalation_rate">-12%</metric>
+      </metrics_impact>
+    </release>
+
+    <release version="2.2.0" date="2024-12-01" type="minor">
+      <summary>Improved handling of emotional messages</summary>
+      <changes>
+        <change type="improvement">
+          <description>Better sentiment detection for frustrated vs angry customers</description>
+        </change>
+        <change type="improvement">
+          <description>Added guardrail against classifying venting as actionable requests</description>
+        </change>
+      </changes>
+    </release>
+
+    <release version="2.0.0" date="2024-09-15" type="major">
+      <summary>BREAKING: New output schema with structured routing</summary>
+      <changes>
+        <change type="breaking">
+          <description>Output changed from flat JSON to nested structure with routing metadata</description>
+          <before><![CDATA[{"intent": "billing", "urgency": "high"}]]></before>
+          <after><![CDATA[{"classification": {"primary_intent": "billing", "urgency": "high"}, "routing": {"team": "billing", "priority": 1}}]]></after>
+          <migration>All consumers must update parsers. See migration guide: /docs/v2-migration.md</migration>
+        </change>
+      </changes>
+      <rollback_notes>
+        If issues arise, rollback to v1.8.2 (last stable v1).
+        Routing service has fallback logic for v1 schema.
+      </rollback_notes>
+    </release>
+
+    <release version="1.0.0" date="2024-06-15" type="major">
+      <summary>Initial production release</summary>
+      <changes>
+        <change type="feature">
+          <description>Core intent classification with 5 categories</description>
+        </change>
+      </changes>
+    </release>
+  </changelog>
+
+  <!--
+    ============================================================================
+    A/B TESTING ANNOTATIONS
+    ============================================================================
+    When running experiments, annotate variants clearly.
+  -->
+  <ab_testing>
+    <experiment id="exp-2025-01-15-tone" status="active">
+      <hypothesis>
+        A more empathetic system message will reduce escalation rates
+        without increasing response time.
+      </hypothesis>
+      <start_date>2025-01-15</start_date>
+      <end_date>2025-01-29</end_date>
+      <traffic_split>
+        <variant name="control" percentage="50">Current production (v2.3.1)</variant>
+        <variant name="treatment" percentage="50">Empathetic tone variant</variant>
+      </traffic_split>
+      <primary_metric>escalation_rate</primary_metric>
+      <secondary_metrics>
+        <metric>customer_satisfaction_score</metric>
+        <metric>first_response_resolution_rate</metric>
+        <metric>average_handle_time</metric>
+      </secondary_metrics>
+      <guardrails>
+        <guardrail metric="error_rate" threshold="0.05" action="halt">
+          Stop experiment if error rate exceeds 5%
+        </guardrail>
+        <guardrail metric="escalation_rate" threshold="0.30" action="alert">
+          Alert if escalation rate exceeds 30% (currently 18%)
+        </guardrail>
+      </guardrails>
+    </experiment>
+
+    <!-- Variant definitions -->
+    <variants>
+      <variant id="control" experiment="exp-2025-01-15-tone">
+        <!-- This is the current production prompt -->
+        <use_prompt_section>prompt_v2.3.1</use_prompt_section>
+      </variant>
+
+      <variant id="treatment" experiment="exp-2025-01-15-tone">
+        <!-- Only the system context differs -->
+        <override_section name="system_context"><![CDATA[
+You are a compassionate customer support assistant. Your primary goal is to
+understand how the customer is feeling and acknowledge their experience before
+addressing their technical issue. Take a moment to recognize their frustration
+or confusion, then provide clear, helpful guidance.
+        ]]></override_section>
+        <inherit_from>prompt_v2.3.1</inherit_from>
+      </variant>
+    </variants>
+
+    <!-- Historical experiments for reference -->
+    <completed_experiments>
+      <experiment id="exp-2024-11-01-examples" status="completed" outcome="winner_deployed">
+        <summary>Tested 3 vs 5 few-shot examples</summary>
+        <winner>5 examples (treatment)</winner>
+        <result>+4.2% accuracy, deployed as v2.3.0</result>
+      </experiment>
+      <experiment id="exp-2024-10-15-json-format" status="completed" outcome="control_retained">
+        <summary>Tested nested vs flat JSON output</summary>
+        <winner>Flat JSON (control)</winner>
+        <result>Nested caused 8% parsing errors in legacy consumers</result>
+      </experiment>
+    </completed_experiments>
+  </ab_testing>
+
+  <!--
+    ============================================================================
+    ROLLBACK MARKERS
+    ============================================================================
+    Define safe rollback points and automated rollback triggers.
+  -->
+  <rollback_configuration>
+    <current_version>2.3.1</current_version>
+
+    <safe_rollback_versions>
+      <!-- Versions verified safe to rollback to -->
+      <version id="2.3.0" verified_date="2025-01-10">
+        <compatibility>Full backward compatibility</compatibility>
+        <notes>Loses edge case fix from 2.3.1</notes>
+      </version>
+      <version id="2.2.0" verified_date="2024-12-01">
+        <compatibility>Full backward compatibility</compatibility>
+        <notes>Loses confidence scores and multi-intent</notes>
+      </version>
+      <version id="1.8.2" verified_date="2024-09-14">
+        <compatibility>Requires v1 schema support in consumers</compatibility>
+        <notes>Last v1 release - use only if v2 has critical issues</notes>
+      </version>
+    </safe_rollback_versions>
+
+    <automatic_rollback_triggers>
+      <!--
+        Define conditions that should trigger automatic rollback.
+        Integrate with your monitoring/alerting system.
+      -->
+      <trigger id="error_rate_spike">
+        <condition>error_rate > 0.10 for 5 minutes</condition>
+        <action>rollback_to_previous_stable</action>
+        <notification>page oncall, notify #support-automation</notification>
+      </trigger>
+      <trigger id="latency_degradation">
+        <condition>p99_latency > 5000ms for 10 minutes</condition>
+        <action>alert_only</action>
+        <notification>notify #support-automation</notification>
+      </trigger>
+      <trigger id="classification_drift">
+        <condition>unknown_intent_rate > 0.15 for 1 hour</condition>
+        <action>alert_and_prepare_rollback</action>
+        <notification>notify prompt-owners</notification>
+      </trigger>
+    </automatic_rollback_triggers>
+
+    <rollback_procedure>
+      <step order="1">Verify rollback target version in safe_rollback_versions</step>
+      <step order="2">Run: prompt-deploy rollback --to={version} --reason="{reason}"</step>
+      <step order="3">Monitor error_rate and classification_accuracy for 15 minutes</step>
+      <step order="4">If stable, update incident ticket with rollback confirmation</step>
+      <step order="5">Schedule post-mortem to understand what went wrong</step>
+    </rollback_procedure>
+  </rollback_configuration>
+
+  <!--
+    ============================================================================
+    THE ACTUAL PROMPT (Current Production Version)
+    ============================================================================
+  -->
+  <prompt_v2.3.1>
+    <system_context><![CDATA[
+You are a customer support classifier. Your job is to analyze incoming messages
+and determine the customer's intent, urgency, and emotional state so messages
+can be routed to the right team.
+
+Be accurate and consistent. When uncertain, indicate low confidence rather than
+guessing. Multi-intent messages should identify both primary and secondary intents.
+    ]]></system_context>
+
+    <task>
+      Classify the customer message into intent categories with urgency and sentiment.
+    </task>
+
+    <constraints>
+      <!-- v2.3.1: Added constraint about quoted text -->
+      <constraint id="C001" since="1.0.0">Primary intent must be one of: billing, technical, account, feedback, sales</constraint>
+      <constraint id="C002" since="2.3.0">Include confidence score between 0.0 and 1.0</constraint>
+      <constraint id="C003" since="2.3.1">Ignore intent signals in quoted or referenced text; classify based on customer's actual request</constraint>
+      <constraint id="C004" since="2.0.0">Output must be valid JSON matching the v2 schema</constraint>
+    </constraints>
+
+    <output_schema version="2.0">
+      <![CDATA[
+{
+  "classification": {
+    "primary_intent": "<billing|technical|account|feedback|sales>",
+    "secondary_intent": "<same options or null>",
+    "urgency": "<critical|high|medium|low>",
+    "sentiment": "<positive|neutral|frustrated|angry>",
+    "confidence": <0.0-1.0>
+  },
+  "routing": {
+    "team": "<team_name>",
+    "priority": <1-5>,
+    "needs_human": <boolean>,
+    "suggested_response_type": "<string>"
+  },
+  "metadata": {
+    "classifier_version": "2.3.1",
+    "processing_notes": "<optional string>"
+  }
+}
+      ]]>
+    </output_schema>
+
+    <!-- Examples truncated for brevity - see 009.5 for full example set -->
+    <examples>
+      <example type="standard" added_in="1.0.0">
+        <input><![CDATA[I can't log into my account. I've tried resetting my password but it's not working.]]></input>
+        <output><![CDATA[{"classification": {"primary_intent": "account", "secondary_intent": null, "urgency": "high", "sentiment": "frustrated", "confidence": 0.95}, "routing": {"team": "account-support", "priority": 2, "needs_human": false, "suggested_response_type": "password_reset_guide"}, "metadata": {"classifier_version": "2.3.1"}}]]></output>
+      </example>
+
+      <!-- v2.3.1 fix: Edge case for quoted text -->
+      <example type="edge_case" added_in="2.3.1">
+        <description>Customer quoting policy text - don't classify based on quoted content</description>
+        <input><![CDATA[Your website says "Contact us for refunds within 30 days." I just want to know where to find my order history.]]></input>
+        <output><![CDATA[{"classification": {"primary_intent": "technical", "secondary_intent": null, "urgency": "low", "sentiment": "neutral", "confidence": 0.88}, "routing": {"team": "general-support", "priority": 4, "needs_human": false, "suggested_response_type": "order_history_guide"}, "metadata": {"classifier_version": "2.3.1", "processing_notes": "Refund mention is quoted policy text, not customer request"}}]]></output>
+        <annotation>
+          The word "refund" appears but is quoted from policy. The actual
+          request is about order history - classify as technical, not billing.
+        </annotation>
+      </example>
+    </examples>
+  </prompt_v2.3.1>
+</prompt_manifest>
+
+<!--
+  ============================================================================
+  IMPLEMENTATION NOTES
+  ============================================================================
+
+  1. STORAGE STRATEGY
+     Store prompts in version control (git) with this structure:
+
+     prompts/
+     ├── customer-intent-classifier/
+     │   ├── manifest.xml          (this file - includes all versions)
+     │   ├── v1/
+     │   │   └── prompt.xml        (archived v1 versions)
+     │   ├── v2/
+     │   │   └── prompt.xml        (current major version)
+     │   └── tests/
+     │       ├── regression.json   (test cases)
+     │       └── golden.json       (expected outputs)
+
+  2. DEPLOYMENT WORKFLOW
+
+     develop → review → staging → canary (10%) → production (100%)
+
+     Each stage should run the regression suite and compare metrics.
+
+  3. VERSIONING AUTOMATION
+
+     Use pre-commit hooks to:
+     - Validate version number incremented
+     - Ensure changelog entry exists
+     - Run regression tests
+     - Check for breaking changes in output schema
+
+  4. OBSERVABILITY INTEGRATION
+
+     Log with every inference:
+     {
+       "prompt_id": "customer-intent-classifier",
+       "prompt_version": "2.3.1",
+       "experiment_variant": "control",  // or null if not in experiment
+       "inference_id": "uuid",
+       "timestamp": "ISO8601"
+     }
+
+     This enables:
+     - Version-specific metrics dashboards
+     - A/B test analysis
+     - Rollback impact assessment
+
+  5. BREAKING CHANGE DETECTION
+
+     Automate detection of breaking changes:
+     - Parse output_schema and compare to previous version
+     - Flag field removals, type changes, or structure changes
+     - Require explicit acknowledgment for major version bumps
+-->

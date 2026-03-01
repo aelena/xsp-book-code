@@ -1,0 +1,29 @@
+<prompt>
+  <task>Create a project brief from the notes.</task>
+
+  <constraints>
+    <constraint>Use a modern, restrained tone.</constraint>
+    <constraint>Assume the audience is technical leadership.</constraint>
+  </constraints>
+
+  <deliverables>
+    <deliverable>Problem statement</deliverable>
+    <deliverable>Scope (in/out)</deliverable>
+    <deliverable>Risks</deliverable>
+    <deliverable>Next 3 actions</deliverable>
+  </deliverables>
+
+  <input><![CDATA[
+  (notes)
+  ]]></input>
+
+  <checks>
+    <check>All deliverables present.</check>
+    <check>No invented facts.</check>
+  </checks>
+
+  <output_format>
+Return only the finished brief. No preamble.
+</output_format>
+</prompt>
+

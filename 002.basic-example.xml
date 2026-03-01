@@ -1,0 +1,15 @@
+<prompt>
+  <role>You are an editor.</role>
+  <task>Rewrite the text for clarity.</task>
+  <constraints>
+    <constraint>Keep meaning unchanged.</constraint>
+    <constraint>Use a restrained professional tone.</constraint>
+  </constraints>
+  <input>
+    <![CDATA[
+    As the usage of LLM-powered systems graduate from single and casual prompts to increasingly sophisticated production pipelines as well as individual usage, a recurring problem emerges: longer, more complex prompts fail unpredictably because models may blur the boundaries between instructions, data, constraints, and output format. XML-structured prompting addresses this by wrapping each logical section in labeled tags, creating unambiguous structure as well as explicit structural boundaries that minimize ambiguity and improve compliance. The adoption of this approach transforms ad-hoc prompting into a maintainable discipline—one that scales across teams, supports versioning and testing, and integrates naturally with validation frameworks.
+    ]]>
+  </input>
+  <output_format>Return only the rewritten text.</output_format>
+</prompt>
+

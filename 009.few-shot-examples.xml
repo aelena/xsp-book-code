@@ -1,0 +1,176 @@
+<!--
+  009. Few-Shot Examples Template
+
+  Few-shot prompting provides the model with input/output examples that demonstrate
+  the desired behavior. This is one of the most effective techniques for:
+
+  - Teaching specific output formats
+  - Establishing tone and style
+  - Handling edge cases explicitly
+  - Reducing ambiguity in complex tasks
+
+  XML structure makes few-shot examples particularly powerful because:
+  1. Clear separation between example inputs and outputs
+  2. Annotations explain WHY each example matters
+  3. Example types (standard, edge_case, negative) are explicit
+  4. The model can pattern-match on consistent structure
+-->
+
+<prompt>
+  <task>
+    <!-- Describe the task clearly. The examples will teach HOW to do it. -->
+  </task>
+
+  <context><![CDATA[
+  <!-- Optional: Background information that applies to all examples -->
+  ]]></context>
+
+  <constraints>
+    <constraint>Follow the pattern demonstrated in the examples exactly.</constraint>
+    <constraint>If input doesn't match any example pattern, apply the closest match.</constraint>
+    <!-- Add task-specific constraints -->
+  </constraints>
+
+  <!--
+    FEW-SHOT EXAMPLES SECTION
+
+    Best practices:
+    - Include 2-5 examples (more isn't always better)
+    - Cover the common case first
+    - Include at least one edge case
+    - Consider a negative example (what NOT to do)
+    - Order from simple to complex
+    - Add annotations to explain non-obvious decisions
+  -->
+  <examples>
+    <!--
+      Example 1: The Standard Case
+      Always start with a clear, typical example that demonstrates the core pattern.
+    -->
+    <example type="standard">
+      <description>Brief description of what this example demonstrates</description>
+      <input><![CDATA[
+      The input that the model would receive
+      ]]></input>
+      <output><![CDATA[
+      The exact output format you expect
+      ]]></output>
+      <annotation>
+        Explain any non-obvious decisions made in this output.
+        This helps the model understand the reasoning, not just the pattern.
+      </annotation>
+    </example>
+
+    <!--
+      Example 2: A Variation
+      Show how the pattern adapts to slightly different inputs.
+    -->
+    <example type="standard">
+      <description>A variation showing different input characteristics</description>
+      <input><![CDATA[
+      A different input that requires the same treatment
+      ]]></input>
+      <output><![CDATA[
+      Consistent output format with different content
+      ]]></output>
+    </example>
+
+    <!--
+      Example 3: Edge Case
+      Explicitly show how to handle tricky situations.
+    -->
+    <example type="edge_case">
+      <description>What makes this an edge case and how to handle it</description>
+      <input><![CDATA[
+      An unusual or boundary-condition input
+      ]]></input>
+      <output><![CDATA[
+      The correct handling for this edge case
+      ]]></output>
+      <annotation>
+        Edge cases are where models often fail. Being explicit here
+        prevents the model from guessing incorrectly.
+      </annotation>
+    </example>
+
+    <!--
+      Example 4: Negative Example (Optional but Powerful)
+      Show what NOT to do. This is especially useful for:
+      - Preventing common mistakes
+      - Clarifying ambiguous instructions
+      - Teaching what to reject or flag
+    -->
+    <example type="negative">
+      <description>An example of incorrect output to avoid</description>
+      <input><![CDATA[
+      An input that might tempt incorrect handling
+      ]]></input>
+      <wrong_output><![CDATA[
+      What the model might incorrectly produce
+      ]]></wrong_output>
+      <correct_output><![CDATA[
+      What should actually be produced
+      ]]></correct_output>
+      <annotation>
+        Explain why the wrong output is wrong and the correct one is right.
+      </annotation>
+    </example>
+  </examples>
+
+  <!--
+    ACTUAL INPUT TO PROCESS
+    After seeing the examples, the model processes this input.
+  -->
+  <input><![CDATA[
+  The actual input to process using the learned pattern
+  ]]></input>
+
+  <output_format>
+    <!--
+      Reiterate the expected format. Even with examples, explicit
+      format instructions improve compliance.
+    -->
+    Follow the exact output format shown in the examples.
+    Do not add explanations or preamble.
+  </output_format>
+
+  <checks>
+    <check>Output matches the structure shown in examples.</check>
+    <check>Edge cases are handled as demonstrated.</check>
+    <!-- Add task-specific checks -->
+  </checks>
+</prompt>
+
+<!--
+  DESIGN PRINCIPLES FOR FEW-SHOT EXAMPLES
+
+  1. QUALITY OVER QUANTITY
+     3 excellent examples beat 10 mediocre ones. Each example should
+     teach something distinct.
+
+  2. COVERAGE STRATEGY
+     - 1-2 standard cases (the 80% scenario)
+     - 1 edge case (boundary conditions)
+     - 1 negative example (what to avoid)
+     - 1 complex case (if task complexity warrants)
+
+  3. ANNOTATION VALUE
+     Annotations help the model understand intent, not just pattern.
+     Use them for:
+     - Non-obvious decisions
+     - Trade-offs made
+     - Why this approach vs. alternatives
+
+  4. CONSISTENCY IS KEY
+     - Same structure in every example
+     - Same level of detail
+     - Same formatting conventions
+
+  5. PROGRESSIVE COMPLEXITY
+     Order examples from simple to complex. The model builds
+     understanding incrementally.
+
+  6. REAL DATA PREFERRED
+     Use realistic examples, not "foo/bar" placeholders.
+     The model learns from the content, not just structure.
+-->

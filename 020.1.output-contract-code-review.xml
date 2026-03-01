@@ -1,0 +1,99 @@
+<prompt>
+  <!--
+    Example 20.1: Technical - Code Review Output Contract
+    Demonstrates a structured output contract for automated code review feedback
+  -->
+
+  <task>Review the provided code and generate structured feedback.</task>
+
+  <context><![CDATA[
+  This code review is part of an automated CI/CD pipeline. The output will be
+  parsed by tooling that posts comments directly to pull requests. Consistency
+  in format is critical for the parsing to work correctly.
+  ]]></context>
+
+  <constraints>
+    <constraint>Only flag issues you are confident about.</constraint>
+    <constraint>Do not suggest stylistic changes unless they affect readability significantly.</constraint>
+    <constraint>Security issues must always be flagged, even if minor.</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  // Code to review would be inserted here
+  function processUserData(userData) {
+    const query = "SELECT * FROM users WHERE id = " + userData.id;
+    return db.execute(query);
+  }
+  ]]></input>
+
+  <output_contract>
+    <format>
+      Return valid JSON matching the schema below.
+      No markdown fences, no explanation outside the JSON.
+    </format>
+
+    <schema><![CDATA[
+{
+  "summary": {
+    "total_issues": <integer>,
+    "critical": <integer>,
+    "warning": <integer>,
+    "suggestion": <integer>,
+    "overall_assessment": "<string: APPROVE | REQUEST_CHANGES | NEEDS_DISCUSSION>"
+  },
+  "issues": [
+    {
+      "id": "<string: unique identifier like SEC-001>",
+      "severity": "<string: critical | warning | suggestion>",
+      "category": "<string: security | performance | maintainability | correctness>",
+      "line_start": <integer>,
+      "line_end": <integer>,
+      "title": "<string: brief issue title, max 80 chars>",
+      "description": "<string: detailed explanation>",
+      "suggestion": "<string: how to fix, or null if unclear>",
+      "code_snippet": "<string: the problematic code, or null>"
+    }
+  ],
+  "positive_observations": [
+    "<string: things done well, max 3 items>"
+  ]
+}
+    ]]></schema>
+
+    <constraints_on_output>
+      <constraint>Issues array must be sorted by severity (critical first).</constraint>
+      <constraint>Each issue must have a unique id within this review.</constraint>
+      <constraint>Line numbers must be valid (within the provided code range).</constraint>
+      <constraint>If no issues found, return empty issues array, not null.</constraint>
+      <constraint>Always include at least one positive observation if code is not entirely broken.</constraint>
+    </constraints_on_output>
+
+    <example_output><![CDATA[
+{
+  "summary": {
+    "total_issues": 1,
+    "critical": 1,
+    "warning": 0,
+    "suggestion": 0,
+    "overall_assessment": "REQUEST_CHANGES"
+  },
+  "issues": [
+    {
+      "id": "SEC-001",
+      "severity": "critical",
+      "category": "security",
+      "line_start": 3,
+      "line_end": 3,
+      "title": "SQL Injection vulnerability via string concatenation",
+      "description": "User input is directly concatenated into SQL query without sanitization or parameterization, allowing arbitrary SQL execution.",
+      "suggestion": "Use parameterized queries: db.execute('SELECT * FROM users WHERE id = ?', [userData.id])",
+      "code_snippet": "const query = \"SELECT * FROM users WHERE id = \" + userData.id;"
+    }
+  ],
+  "positive_observations": [
+    "Function has a clear, descriptive name"
+  ]
+}
+    ]]></example_output>
+  </output_contract>
+</prompt>

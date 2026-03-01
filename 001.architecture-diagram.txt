@@ -1,0 +1,16 @@
+┌─────────────────────────────────────────────────────────────┐
+│ Application Layer (what you're building)                    │
+├─────────────────────────────────────────────────────────────┤
+│ Reasoning & Execution                                       │
+│  ↑ Governed by: XML-structured prompts (instructions)       │
+│  ↓ Calls: Function signatures (what's available)            │
+├─────────────────────────────────────────────────────────────┤
+│ Output Validation Layer                                     │
+│  ↑ Governed by: JSON schemas, regex, semantic validators    │
+│  ↑ Governed by: XML-defined output contracts                │
+├─────────────────────────────────────────────────────────────┤
+│ Model (GPT-4, Claude, Llama, etc.)                          │
+├─────────────────────────────────────────────────────────────┤
+│ Infrastructure (inference, caching, logging, observability) │
+└─────────────────────────────────────────────────────────────┘
+

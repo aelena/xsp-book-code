@@ -1,0 +1,159 @@
+<prompt>
+  <!--
+    Example 20.3: Marketing - Social Media Content Batch Output Contract
+    Demonstrates a structured output contract for generating social media content at scale
+  -->
+
+  <task>Generate a batch of social media posts based on the source content.</task>
+
+  <context><![CDATA[
+  This is part of a content repurposing pipeline. Long-form content (blog posts,
+  podcasts, reports) is transformed into social posts. The output feeds directly
+  into a scheduling tool via API, so strict format compliance is required.
+  Brand: B2B SaaS company, professional but not stuffy.
+  ]]></context>
+
+  <constraints>
+    <constraint>All content must be derived from the source material.</constraint>
+    <constraint>Do not invent statistics or quotes not in the source.</constraint>
+    <constraint>Each platform's content must feel native to that platform.</constraint>
+    <constraint>Avoid engagement bait (e.g., "You won't believe...")</constraint>
+  </constraints>
+
+  <input><![CDATA[
+  Source: Blog post titled "Why We Switched from Jira to Linear"
+  Key points:
+  - Reduced sprint planning time by 40%
+  - Team satisfaction scores improved from 6.2 to 8.1
+  - Migration took 2 weeks with full history preserved
+  - Main benefits: speed, keyboard shortcuts, better defaults
+  - Main tradeoff: less customization, smaller ecosystem
+  URL: https://example.com/blog/jira-to-linear
+  ]]></input>
+
+  <output_contract>
+    <format>
+      Return valid JSON matching the schema below.
+      No markdown, no additional commentary.
+    </format>
+
+    <schema><![CDATA[
+{
+  "source_url": "<string: original content URL>",
+  "generated_at": "<string: ISO 8601 timestamp>",
+  "content_batch": {
+    "linkedin": [
+      {
+        "post_type": "<string: text | carousel | poll>",
+        "content": "<string: post text, max 3000 chars>",
+        "hashtags": ["<string>"],
+        "hook_line": "<string: first line that appears before 'see more'>",
+        "cta": "<string: call to action, or null>",
+        "estimated_read_time": "<string: e.g., '30 sec'>"
+      }
+    ],
+    "twitter": [
+      {
+        "post_type": "<string: single | thread>",
+        "tweets": [
+          {
+            "content": "<string: max 280 chars>",
+            "char_count": <integer>
+          }
+        ],
+        "thread_hook": "<string: first tweet that draws people in, or null if single>"
+      }
+    ],
+    "threads": [
+      {
+        "content": "<string: max 500 chars>",
+        "char_count": <integer>
+      }
+    ]
+  },
+  "posting_recommendations": {
+    "best_time_suggestion": "<string>",
+    "spacing_advice": "<string>",
+    "a_b_test_ideas": ["<string>"]
+  }
+}
+    ]]></schema>
+
+    <constraints_on_output>
+      <constraint>LinkedIn posts must have a strong hook_line (question or bold statement).</constraint>
+      <constraint>Twitter threads must be 3-7 tweets; single tweets for simple announcements.</constraint>
+      <constraint>All char_count values must be accurate.</constraint>
+      <constraint>Hashtags: 3-5 for LinkedIn, 1-2 for Twitter, 0 for Threads.</constraint>
+      <constraint>Generate exactly 2 LinkedIn variants, 1 Twitter thread, and 1 Threads post.</constraint>
+    </constraints_on_output>
+
+    <example_output><![CDATA[
+{
+  "source_url": "https://example.com/blog/jira-to-linear",
+  "generated_at": "2025-01-17T10:30:00Z",
+  "content_batch": {
+    "linkedin": [
+      {
+        "post_type": "text",
+        "content": "We cut our sprint planning time by 40%.\n\nNot by hiring more people.\nNot by adding another tool.\n\nBy removing one.\n\nAfter 3 years on Jira, we switched to Linear. Here's what changed:\n\n→ Sprint planning: 2 hours → 45 minutes\n→ Team satisfaction: 6.2 → 8.1\n→ Time to find anything: seconds, not minutes\n\nThe biggest surprise? The migration only took 2 weeks—with full history preserved.\n\nThe tradeoff: less customization. But honestly? We didn't need 90% of what we were customizing.\n\nSometimes the best optimization is subtraction.\n\nFull breakdown in comments 👇",
+        "hashtags": ["#ProductManagement", "#Engineering", "#Productivity", "#Startups"],
+        "hook_line": "We cut our sprint planning time by 40%.",
+        "cta": "Full breakdown in comments",
+        "estimated_read_time": "45 sec"
+      },
+      {
+        "post_type": "text",
+        "content": "Hot take: Your project management tool is probably too powerful.\n\nWe used Jira for 3 years. Customized everything. Built workflows for workflows.\n\nThen we switched to Linear and realized:\n\nThe best tool isn't the most powerful one.\nIt's the one your team actually enjoys using.\n\nOur results after 6 months:\n• 40% faster sprint planning\n• Team satisfaction up 30%\n• Zero \"how do I do X in Jira\" Slack messages\n\nYes, we lost some customization.\nNo, we don't miss it.\n\nLink to full story in comments.",
+        "hashtags": ["#ProjectManagement", "#SaaS", "#TeamProductivity", "#DevTools"],
+        "hook_line": "Hot take: Your project management tool is probably too powerful.",
+        "cta": "Link to full story in comments",
+        "estimated_read_time": "40 sec"
+      }
+    ],
+    "twitter": [
+      {
+        "post_type": "thread",
+        "tweets": [
+          {
+            "content": "We switched from Jira to Linear after 3 years.\n\nSprint planning went from 2 hours to 45 minutes.\n\nHere's what we learned (and what we lost):\n\n🧵",
+            "char_count": 168
+          },
+          {
+            "content": "The main wins:\n\n→ Everything is faster (keyboard-first design)\n→ Better defaults = less configuration\n→ Team satisfaction: 6.2 → 8.1\n\nWe stopped fighting the tool.",
+            "char_count": 178
+          },
+          {
+            "content": "The migration was easier than expected:\n\n• 2 weeks total\n• Full history preserved\n• No lost context\n\nWe expected months. We were wrong.",
+            "char_count": 148
+          },
+          {
+            "content": "The tradeoffs:\n\n• Less customization (we didn't need it)\n• Smaller ecosystem (fewer integrations)\n• No portfolio-level views (yet)\n\nFor our 20-person team: worth it.",
+            "char_count": 179
+          },
+          {
+            "content": "Full breakdown here:\n\nhttps://example.com/blog/jira-to-linear\n\nIf you're drowning in Jira configurations, it might be worth a look.",
+            "char_count": 138
+          }
+        ],
+        "thread_hook": "We switched from Jira to Linear after 3 years. Sprint planning went from 2 hours to 45 minutes."
+      }
+    ],
+    "threads": [
+      {
+        "content": "Switched from Jira to Linear after 3 years. Sprint planning dropped from 2 hours to 45 minutes. Team satisfaction went from 6.2 to 8.1.\n\nThe tradeoff? Less customization. But we realized we were over-engineering our own workflows.\n\nSometimes simpler tools win.",
+        "char_count": 289
+      }
+    ]
+  },
+  "posting_recommendations": {
+    "best_time_suggestion": "LinkedIn: Tuesday-Thursday 8-10am; Twitter: Weekdays 12-1pm",
+    "spacing_advice": "Post LinkedIn variants 3-4 days apart to avoid audience overlap fatigue",
+    "a_b_test_ideas": [
+      "Test 'hot take' hook vs. 'results' hook on LinkedIn",
+      "Compare engagement on thread vs. single tweet with link"
+    ]
+  }
+}
+    ]]></example_output>
+  </output_contract>
+</prompt>

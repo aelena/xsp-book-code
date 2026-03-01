@@ -1,0 +1,276 @@
+<!--
+  025. PII Handling Template
+
+  Personally Identifiable Information (PII) requires special handling in LLM applications.
+  This template demonstrates patterns for:
+  - Pre-processing redaction (safest approach)
+  - Output constraints (when pre-redaction isn't possible)
+  - Extraction with selective redaction
+  - Handling uncertain/ambiguous PII
+
+  Key principle: Defense in depth. Never rely solely on prompt constraints.
+  Combine with pre-processing detection, post-processing validation, and logging policies.
+-->
+
+<prompt>
+  <!--
+    ============================================================================
+    PII CATEGORIES REFERENCE
+    ============================================================================
+    Define what constitutes PII for your use case. This varies by jurisdiction
+    (GDPR, CCPA, HIPAA) and context.
+  -->
+  <pii_categories>
+    <!-- Direct Identifiers - Always PII -->
+    <category id="name" sensitivity="high">Full names, first/last names</category>
+    <category id="email" sensitivity="high">Email addresses</category>
+    <category id="phone" sensitivity="high">Phone numbers (any format)</category>
+    <category id="ssn" sensitivity="critical">Social Security Numbers, Tax IDs</category>
+    <category id="financial" sensitivity="critical">Credit card numbers, bank accounts</category>
+    <category id="address" sensitivity="high">Physical addresses, ZIP codes (when combined)</category>
+    <category id="id_numbers" sensitivity="high">Driver's license, passport, employee IDs</category>
+
+    <!-- Quasi-Identifiers - PII in combination -->
+    <category id="dob" sensitivity="medium">Date of birth</category>
+    <category id="age" sensitivity="low">Age (PII when combined with other data)</category>
+    <category id="gender" sensitivity="low">Gender/sex</category>
+    <category id="location" sensitivity="medium">City, state (PII when combined)</category>
+    <category id="employer" sensitivity="medium">Employer name, job title</category>
+
+    <!-- Sensitive but not always PII -->
+    <category id="health" sensitivity="high">Medical conditions, medications (HIPAA)</category>
+    <category id="biometric" sensitivity="critical">Fingerprints, facial recognition data</category>
+    <category id="behavioral" sensitivity="medium">Purchase history, browsing patterns</category>
+  </pii_categories>
+
+  <!--
+    ============================================================================
+    PATTERN 1: PRE-PROCESSING REDACTION
+    ============================================================================
+    The safest approach: redact PII before it reaches the model.
+    Use consistent placeholder formats that preserve semantic meaning.
+  -->
+  <redaction_format>
+    <!--
+      Placeholder convention: [TYPE_N] where N is a counter
+      This preserves referential identity (same person = same placeholder)
+      without revealing actual values.
+    -->
+    <placeholder type="name">[PERSON_N]</placeholder>
+    <placeholder type="email">[EMAIL_N]</placeholder>
+    <placeholder type="phone">[PHONE_N]</placeholder>
+    <placeholder type="address">[ADDRESS_N]</placeholder>
+    <placeholder type="ssn">[SSN_REDACTED]</placeholder>
+    <placeholder type="account">[ACCOUNT_N]</placeholder>
+    <placeholder type="date_of_birth">[DOB_REDACTED]</placeholder>
+    <placeholder type="credit_card">[CC_REDACTED]</placeholder>
+
+    <!--
+      Example of redacted input:
+
+      Original:
+        "Hi, I'm John Smith (john.smith@email.com). My account #12345
+         was charged twice. Please call me at 555-123-4567."
+
+      Redacted:
+        "Hi, I'm [PERSON_1] ([EMAIL_1]). My account [ACCOUNT_1]
+         was charged twice. Please call me at [PHONE_1]."
+    -->
+  </redaction_format>
+
+  <!--
+    ============================================================================
+    PATTERN 2: OUTPUT CONSTRAINTS
+    ============================================================================
+    When pre-redaction isn't possible, constrain outputs explicitly.
+  -->
+  <pii_constraints>
+    <!-- Critical: These must never be violated -->
+    <constraint priority="critical" id="PII-001">
+      Never output: full names, email addresses, phone numbers, physical addresses,
+      SSNs, account numbers, credit card numbers, or other direct identifiers.
+    </constraint>
+    <constraint priority="critical" id="PII-002">
+      When referencing individuals, use generic terms: "the customer", "the user",
+      "the applicant", "Person A/B/C" - never actual names.
+    </constraint>
+    <constraint priority="critical" id="PII-003">
+      If the task requires acknowledging contact information exists, state the type
+      only: "email address provided" not the actual address.
+    </constraint>
+
+    <!-- High: Should not be violated without explicit override -->
+    <constraint priority="high" id="PII-004">
+      Do not output combinations of quasi-identifiers that could identify someone:
+      e.g., "45-year-old female accountant in Springfield" is identifying.
+    </constraint>
+    <constraint priority="high" id="PII-005">
+      Do not quote text that contains PII. Paraphrase instead, replacing
+      identifiers with generic references.
+    </constraint>
+
+    <!-- Standard: Follow unless task specifically requires otherwise -->
+    <constraint priority="standard" id="PII-006">
+      Round ages to decades ("in their 40s") rather than exact ages.
+    </constraint>
+    <constraint priority="standard" id="PII-007">
+      Use region-level locations ("Midwest US") rather than specific cities
+      unless geographic precision is essential to the task.
+    </constraint>
+  </pii_constraints>
+
+  <!--
+    ============================================================================
+    PATTERN 3: HANDLING UNCERTAINTY
+    ============================================================================
+    When it's unclear whether data is PII, err on the side of privacy.
+  -->
+  <uncertainty_handling>
+    <policy id="default">
+      When uncertain whether data constitutes PII, treat it as PII.
+      False positives (over-redaction) are preferable to false negatives (PII leakage).
+    </policy>
+
+    <policy id="ambiguous_names">
+      Words that could be names or common nouns (e.g., "Rose", "Hunter", "Chase"):
+      - In direct address or signature context: treat as name (PII)
+      - As standalone words: treat as non-PII
+      - When uncertain: treat as PII
+    </policy>
+
+    <policy id="numbers">
+      Strings of digits that could be identifiers:
+      - 9 digits: assume SSN (critical PII)
+      - 10 digits: assume phone number (high PII)
+      - 16 digits: assume credit card (critical PII)
+      - Other lengths: flag for review, default to redaction
+    </policy>
+
+    <policy id="context_dependent">
+      Some data is PII only in context:
+      - "John" alone: possibly not PII
+      - "John, the project manager at Acme Corp": PII (identifiable)
+      Flag such contextual combinations for review.
+    </policy>
+  </uncertainty_handling>
+
+  <!--
+    ============================================================================
+    SELF-CHECKS
+    ============================================================================
+  -->
+  <checks>
+    <check id="CHK-PII-001">Scan output for email patterns (contains @)</check>
+    <check id="CHK-PII-002">Scan output for phone patterns (7+ consecutive digits, formatted numbers)</check>
+    <check id="CHK-PII-003">Scan output for potential names (capitalized words in person-reference context)</check>
+    <check id="CHK-PII-004">Verify no direct quotes from input that contain identifiers</check>
+    <check id="CHK-PII-005">Check that any placeholder from input is used verbatim, not "decoded"</check>
+  </checks>
+
+  <!--
+    ============================================================================
+    AUDIT LOGGING STRUCTURE
+    ============================================================================
+    Log PII handling decisions without logging the PII itself.
+  -->
+  <audit_log_schema>
+    <![CDATA[
+{
+  "timestamp": "ISO8601",
+  "prompt_id": "string",
+  "prompt_version": "string",
+  "pii_handling": {
+    "approach": "pre-redacted | output-constrained | hybrid",
+    "redaction_applied": true | false,
+    "redaction_counts": {
+      "names": 0,
+      "emails": 0,
+      "phones": 0,
+      "addresses": 0,
+      "other": 0
+    },
+    "constraints_applied": ["PII-001", "PII-002", ...],
+    "uncertainty_flags": [
+      {
+        "type": "ambiguous_name",
+        "action_taken": "redacted",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "output_validation": {
+    "pii_scan_passed": true | false,
+    "patterns_detected": []
+  }
+}
+    ]]>
+  </audit_log_schema>
+</prompt>
+
+<!--
+  ============================================================================
+  IMPLEMENTATION NOTES
+  ============================================================================
+
+  1. DEFENSE IN DEPTH
+     Never rely solely on prompt constraints for PII protection.
+     Layer your defenses:
+
+     Layer 1: Input sanitization (pre-processing)
+       - Run PII detection before sending to model
+       - Use named entity recognition (NER) for names
+       - Use regex patterns for structured PII (emails, phones, SSNs)
+       - Replace detected PII with placeholders
+
+     Layer 2: Prompt constraints (this template)
+       - Explicit instructions not to output PII
+       - Self-check requirements
+       - Generic reference requirements
+
+     Layer 3: Output validation (post-processing)
+       - Scan model output for PII patterns
+       - Block or redact before returning to user
+       - Log violations for review
+
+     Layer 4: Logging policies
+       - Never log raw inputs containing PII
+       - Log redacted versions only
+       - Store PII mapping separately with encryption
+
+  2. REGULATORY CONSIDERATIONS
+
+     GDPR (EU):
+       - Broad definition of personal data
+       - Includes IP addresses, cookie IDs
+       - Requires explicit consent for processing
+       - Right to erasure implications
+
+     CCPA (California):
+       - Includes household data
+       - Requires disclosure of data categories
+       - Opt-out rights for data sales
+
+     HIPAA (US Healthcare):
+       - 18 specific identifiers
+       - Includes dates, geographic data
+       - Requires de-identification standards
+
+     Customize pii_categories based on applicable regulations.
+
+  3. TESTING STRATEGY
+
+     Include these test cases:
+     - Obvious PII: "john.doe@email.com" should never appear in output
+     - Subtle PII: Birthdate + ZIP code combination
+     - Contextual PII: Common word that becomes a name in context
+     - Adversarial: Input asking model to "repeat my email"
+     - Edge cases: International formats (non-US phones, EU postal codes)
+
+  4. PLACEHOLDER REVERSIBILITY
+
+     If you need to restore PII after processing (e.g., for personalized responses):
+     - Store placeholder mappings in secure, encrypted storage
+     - Apply strict access controls to mapping data
+     - Restore PII only at the final output stage, after all logging
+     - Never send restored PII back through the model
+-->
