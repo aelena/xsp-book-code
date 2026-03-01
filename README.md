@@ -1,6 +1,13 @@
-# XML-Structured Prompting: Source Files & Templates
+# XML-Structured Prompting: Companion Source Files
 
-This folder contains reference implementations, templates, and examples demonstrating XML-Structured Prompting (XSP)—a software engineering approach to prompt design that uses explicit structural boundaries to improve reliability, maintainability, and compliance.
+> Companion repository for the book *XML-Structured Prompting: A Software Engineering Discipline for Reliable LLM Systems*.
+
+The book is [available here](https://aelena74.gumroad.com/l/xsp)
+
+This folder contains every template, example, and schema from the book—ready to copy, adapt, and use in your own projects.
+No guarantees :) 
+
+---
 
 ## What is XML-Structured Prompting?
 
@@ -29,16 +36,15 @@ These source files implement the **VCO Framework** described in the book:
 
 ## File Organization
 
-**Why a flat structure?** All files live in a single directory by design. The numbered prefixes (001-026) provide implicit ordering and grouping without the overhead of navigating subdirectories. This makes it easy to:
+All files live in a single directory. The numbered prefixes (001-026) provide implicit ordering and grouping without the overhead of navigating subdirectories. This makes it easy to:
 - See everything at a glance
 - Copy examples without path juggling
-- Reference files by number in conversation ("see 017 for the baseline template")
+- Reference files by number ("see 017 for the baseline template")
 
-The categories below are logical groupings documented here—not physical folders.
-
-Files are numbered for progressive learning. Start with foundations, then explore techniques, and finally use the templates for your own work.
+The categories below are logical groupings—not physical folders.
 
 ### Foundations (001-003)
+
 Core concepts and architecture.
 
 | File | Description |
@@ -48,6 +54,7 @@ Core concepts and architecture.
 | `003.version-control-comparison.sh` | Why structured prompts produce better diffs |
 
 ### Techniques (004-011, 026)
+
 Specific patterns for common challenges.
 
 | File | Description |
@@ -63,6 +70,7 @@ Specific patterns for common challenges.
 | `026.multi-turn-context.xml` | **Multi-turn conversations**: history management, context strategies, reference tracking |
 
 ### Specifications (012, 020)
+
 Schema and contract definitions.
 
 | File | Description |
@@ -71,6 +79,7 @@ Schema and contract definitions.
 | `020.output-contract-example.xml` | Detailed output contract structure |
 
 ### Safety & Guardrails (013, 019, 025)
+
 Preventing unwanted behavior and protecting sensitive data.
 
 | File | Description |
@@ -80,23 +89,8 @@ Preventing unwanted behavior and protecting sensitive data.
 | `019.prompt-injection-defense.xml` | **Comprehensive 6-layer defense**: structural isolation, instruction hierarchy, input marking, output constraints, detection, graceful failure |
 | `025.pii-handling.xml` | **Comprehensive PII handling**: redaction patterns, output constraints, uncertainty handling |
 
-### Prompt Injection Examples (019.x)
-Demonstrations of defending against prompt injection attacks.
-
-| File | Topic | Domain |
-|------|-------|--------|
-| `019.1.injection-indirect-document.xml` | Document processing with hidden injection defense | Technical/Security |
-| `019.2.injection-defense-layers.xml` | Complete 6-layer defense implementation | Technical/Security |
-
-**Key patterns demonstrated:**
-- Direct injection defense ("ignore previous instructions")
-- Indirect injection defense (malicious content in documents)
-- Authority impersonation prevention (fake "System:" messages)
-- Prompt extraction protection
-- Six-layer defense-in-depth model
-- Graceful failure with helpful redirection
-
 ### Use Cases (014-016)
+
 Complete prompts for common tasks.
 
 | File | Description |
@@ -107,6 +101,7 @@ Complete prompts for common tasks.
 | `016.project-brief-use-case.xml` | Multi-deliverable document generation |
 
 ### Templates (017-018)
+
 Reusable skeletons for your own prompts.
 
 | File | Description |
@@ -115,7 +110,8 @@ Reusable skeletons for your own prompts.
 | `018.longform-template.xml` | Comprehensive template for deep content |
 
 ### Template Examples
-Filled-in examples showing templates in action.
+
+Filled-in examples showing templates in action across three domains.
 
 | File | Topic | Domain |
 |------|-------|--------|
@@ -130,7 +126,8 @@ Filled-in examples showing templates in action.
 | `020.3.output-contract-social-content.xml` | Social media batch | Marketing |
 
 ### Few-Shot Examples (009.x)
-Demonstrations of few-shot learning with XML structure. Each shows how to teach models through examples.
+
+Demonstrations of few-shot learning with XML structure.
 
 | File | Topic | Domain |
 |------|-------|--------|
@@ -147,12 +144,26 @@ Demonstrations of few-shot learning with XML structure. Each shows how to teach 
 - Annotations explaining reasoning
 - Confidence levels for uncertain inputs
 
-### Multi-Turn Conversation Examples (026.x)
-Demonstrations of managing conversation context across multiple exchanges.
+### Prompt Injection Defense Examples (019.x)
 
 | File | Topic | Domain |
 |------|-------|--------|
-| `026.1.multi-turn-tech-support.xml` | Database debugging session with sliding window history | Technical |
+| `019.1.injection-indirect-document.xml` | Document processing with hidden injection defense | Technical/Security |
+| `019.2.injection-defense-layers.xml` | Complete 6-layer defense implementation | Technical/Security |
+
+**Key patterns demonstrated:**
+- Direct injection defense ("ignore previous instructions")
+- Indirect injection defense (malicious content in documents)
+- Authority impersonation prevention (fake "System:" messages)
+- Prompt extraction protection
+- Six-layer defense-in-depth model
+- Graceful failure with helpful redirection
+
+### Multi-Turn Conversation Examples (026.x)
+
+| File | Topic | Domain |
+|------|-------|--------|
+| `026.1.multi-turn-tech-support.xml` | Database debugging with sliding window history | Technical |
 | `026.2.multi-turn-coaching.xml` | Career coaching with summarized history and emotional context | Personal Development |
 | `026.3.multi-turn-sales-consultation.xml` | B2B sales qualification with selective history and objection tracking | Marketing/Sales |
 
@@ -165,7 +176,6 @@ Demonstrations of managing conversation context across multiple exchanges.
 - Topic continuity and shift detection
 
 ### Tool Use Examples (004.x)
-Demonstrations of governing tool/function calling with XML structure.
 
 | File | Topic | Domain |
 |------|-------|--------|
@@ -182,6 +192,7 @@ Demonstrations of governing tool/function calling with XML structure.
 - Safety guardrails preventing injection via tool results
 
 ### Operations (021-024)
+
 Enterprise patterns for production prompt management.
 
 | File | Description |
@@ -192,6 +203,7 @@ Enterprise patterns for production prompt management.
 | `024.prompt-versioning.xml` | **Complete versioning system**: semantic versioning, changelog, A/B testing, rollback |
 
 ### JSON Schemas (schema/)
+
 Formal schemas for validation, IDE support, and tooling.
 
 | File | Description |
@@ -209,16 +221,9 @@ Formal schemas for validation, IDE support, and tooling.
 
 ---
 
-## How to Use These Templates
+## Quick Start
 
-### General Workflow
-
-1. **Choose a template** that matches your task complexity
-2. **Fill in the sections** with your specific content
-3. **Copy the entire XML block** into your model's chat interface
-4. **Review the output** against the constraints you specified
-
-### Quick Start: The Baseline Template
+### The Baseline Template
 
 For most tasks, start with `017.baseline-template.xml`:
 
@@ -243,7 +248,7 @@ For most tasks, start with `017.baseline-template.xml`:
 </prompt>
 ```
 
-### Quick Start: Few-Shot Examples
+### Adding Few-Shot Examples
 
 When the output format is complex or nuanced, add examples. Use `009.few-shot-examples.xml` as your template:
 
@@ -284,7 +289,7 @@ When the output format is complex or nuanced, add examples. Use `009.few-shot-ex
 - **Cover the spectrum**: 1-2 standard, 1 edge case, 1 negative
 - **Add annotations**: Explain *why*, not just *what*
 - **Use real data**: Realistic examples teach better than "foo/bar" placeholders
-- **Order matters**: Simple → complex helps models build understanding
+- **Order matters**: Simple -> complex helps models build understanding
 
 ---
 
@@ -292,37 +297,22 @@ When the output format is complex or nuanced, add examples. Use `009.few-shot-ex
 
 ### ChatGPT (GPT-4, GPT-4o)
 
-**How to use:**
-1. Open chat.openai.com or the ChatGPT app
-2. Paste the entire XML prompt into the message box
-3. Send as a single message
+1. Paste the entire XML prompt into the message box
+2. Send as a single message
 
-**Tips for ChatGPT:**
+**Tips:**
 - GPT-4 handles complex XML structures well
 - For system-level instructions, use Custom Instructions or a GPT
 - CDATA sections work correctly—use them for user-provided content
-- If output drifts, add explicit `<checks>` section
-
-**Example workflow:**
-```
-[Paste entire XML prompt]
-[ChatGPT responds following the structure]
-[If needed, say: "Please recheck against the <constraints> section"]
-```
-
-**Custom Instructions integration:**
-You can put your standard `<constraints>` and `<output_format>` in Custom Instructions, then only provide `<task>` and `<input>` in each conversation.
-
----
+- If output drifts, add an explicit `<checks>` section
+- You can put standard `<constraints>` and `<output_format>` in Custom Instructions, then only provide `<task>` and `<input>` per conversation
 
 ### Claude (Anthropic)
 
-**How to use:**
-1. Open claude.ai or use the API
-2. Paste the XML prompt directly
-3. Claude natively understands XML structure very well
+1. Paste the XML prompt into claude.ai or use the API
+2. Claude natively understands XML structure very well
 
-**Tips for Claude:**
+**Tips:**
 - Claude has excellent XML comprehension—it was trained with XML in mind
 - Use `<instructions>` at the top level for Claude Projects
 - The `<thinking>` tag is reserved; avoid using it in your prompts
@@ -344,133 +334,41 @@ You can put your standard `<constraints>` and `<output_format>` in Custom Instru
 <input>...</input>
 ```
 
----
-
 ### Perplexity
 
-**How to use:**
-1. Open perplexity.ai
-2. Paste the XML prompt in the search/chat box
-3. Perplexity will follow the structure while also searching
+1. Paste the XML prompt in the search/chat box
+2. Perplexity will follow the structure while also searching
 
-**Tips for Perplexity:**
-- Perplexity combines search with generation—XML helps separate your constraints from web results
-- Add `<source_policy>` to control how web sources are used:
-  ```xml
-  <source_policy>
-    Prioritize recent sources (last 12 months).
-    Cite all claims with [Source] notation.
-  </source_policy>
-  ```
+**Tips:**
+- XML helps separate your constraints from web results
+- Add `<source_policy>` to control how web sources are used
 - The `<output_format>` is especially useful to prevent Perplexity's default verbose style
 - Works best with Pro mode for complex structured prompts
 
-**Example for research tasks:**
-```xml
-<prompt>
-  <task>Research and summarize the current state of [topic]</task>
-
-  <source_policy>
-    <policy>Use sources from 2024-2025 only</policy>
-    <policy>Prefer primary sources over news aggregators</policy>
-  </source_policy>
-
-  <constraints>
-    <constraint>Maximum 500 words</constraint>
-    <constraint>Include exactly 3 key statistics with citations</constraint>
-  </constraints>
-
-  <output_format>
-    ## Summary
-    [2-3 paragraphs]
-
-    ## Key Statistics
-    1. [stat] - [source]
-    2. [stat] - [source]
-    3. [stat] - [source]
-
-    ## Sources
-    [Numbered list]
-  </output_format>
-</prompt>
-```
-
----
-
 ### Qwen (Alibaba Cloud)
 
-**How to use:**
 1. Access via qwen.ai, Hugging Face, or API
 2. Paste the XML prompt directly
-3. Works well with both Qwen-72B and Qwen-turbo
 
-**Tips for Qwen:**
-- Qwen handles multilingual content well—you can mix languages in `<input>` and specify output language
-- For the API, XML prompts work in both the `user` message and `system` message
-- Add explicit language instructions if needed:
-  ```xml
-  <language>
-    <input_language>auto-detect</input_language>
-    <output_language>English</output_language>
-  </language>
-  ```
+**Tips:**
+- Handles multilingual content well—you can mix languages in `<input>` and specify output language
+- Add `<language>` with `<input_language>` and `<output_language>` tags for translation workflows
 - Qwen-72B follows complex output contracts reliably; smaller models may need simpler structures
-
-**Example with language handling:**
-```xml
-<prompt>
-  <task>Translate and summarize the following document</task>
-
-  <constraints>
-    <constraint>Translate to English</constraint>
-    <constraint>Preserve technical terms in original language with translation in parentheses</constraint>
-    <constraint>Summary should be 100-150 words</constraint>
-  </constraints>
-
-  <input><![CDATA[
-  [Document in any language]
-  ]]></input>
-
-  <output_format>
-    ## Translation
-    [Full translation]
-
-    ## Summary
-    [100-150 word summary in English]
-  </output_format>
-</prompt>
-```
-
----
 
 ### Gemini (Google)
 
-**How to use:**
-1. Open gemini.google.com or use the API
-2. Paste the XML prompt
-3. Works with both Gemini Pro and Ultra
+1. Paste the XML prompt into gemini.google.com or use the API
 
-**Tips for Gemini:**
+**Tips:**
 - Gemini handles XML well but may occasionally add preamble—use explicit "no preamble" constraints
-- For multimodal tasks (images, documents), combine XML structure with file attachments:
-  ```xml
-  <task>Analyze the attached image</task>
-  <constraints>
-    <constraint>Focus on [specific aspect]</constraint>
-  </constraints>
-  [Attach image separately]
-  ```
+- For multimodal tasks, combine XML structure with file attachments
 - Add `<checks>` section to improve constraint compliance
-
----
 
 ### Local Models (Llama, Mistral, etc.)
 
-**How to use:**
-- Works with any local inference (Ollama, LM Studio, llama.cpp)
-- Paste XML prompt in the user message
+Works with any local inference (Ollama, LM Studio, llama.cpp).
 
-**Tips for local models:**
+**Tips:**
 - Simpler structures work better with smaller models (7B-13B)
 - For 70B+ models, full complexity is usually handled well
 - If a model struggles with nested XML, flatten the structure:
@@ -512,60 +410,62 @@ You can put your standard `<constraints>` and `<output_format>` in Custom Instru
 
 ## Recommended Reading Order
 
-**For newcomers:**
+**New to XSP — start here:**
 1. `001.architecture-diagram.txt` — Understand where XSP fits
 2. `002.basic-example.xml` — See a minimal working example
 3. `017.baseline-template.xml` — Start using immediately
 4. `017.1-3` examples — See filled-in templates
 
-**For complex output formats:**
+**Complex output formats:**
 1. `009.few-shot-examples.xml` — Learn the few-shot template structure
 2. `009.1-5` examples — See few-shot patterns across domains
 3. `020.output-contract-example.xml` — Master output contracts
 4. `020.1-3` examples — See contracts in action
 
-**For production use:**
-1. `024.prompt-versioning.xml` — Version prompts like code (semantic versioning, changelog, A/B tests)
+**Production use:**
+1. `024.prompt-versioning.xml` — Version prompts like code
 2. `013.guardrails-example.xml` — Add safety constraints
-3. `025.pii-handling.xml` — **Critical**: PII protection patterns
+3. `025.pii-handling.xml` — PII protection patterns
 4. `019.prompt-injection-defense.xml` — Handle untrusted input
 5. `021.prompt-repository-structure.txt` — Organize at scale
 6. `023.observability-log.json` — Audit logging format
 
-**For PII-sensitive applications:**
-1. `025.pii-handling.xml` — Comprehensive PII handling patterns and policies
+**PII-sensitive applications:**
+1. `025.pii-handling.xml` — Comprehensive PII handling patterns
 2. `013.1.guardrails-pii.xml` — Guardrails for preventing PII exposure
 3. `015.1.extraction-pii-redaction.xml` — Extract data while protecting PII
 
-**For chatbots and conversational applications:**
-1. `026.multi-turn-context.xml` — Master multi-turn conversation handling
-2. `026.1-3` examples — See history strategies in different domains
-3. `019.prompt-injection-defense.xml` — Especially important when history contains user content
+**Chatbots and conversational apps:**
+1. `026.multi-turn-context.xml` — Multi-turn conversation handling
+2. `026.1-3` examples — History strategies across domains
+3. `019.prompt-injection-defense.xml` — Critical when history contains user content
 
-**For tool-using / agentic applications:**
-1. `004.tool-use-example.xml` — Master tool invocation constraints and patterns
-2. `004.1-3` examples — See tool use in code analysis, research, and data analytics
+**Tool-using / agentic applications:**
+1. `004.tool-use-example.xml` — Tool invocation constraints and patterns
+2. `004.1-3` examples — Tool use in code analysis, research, and data analytics
 3. `019.prompt-injection-defense.xml` — Critical when tools can take real-world actions
 
-**For deep understanding:**
+**Deep understanding:**
 - Read all technique files (004-011) in order
 - Review the longform template (018) and its examples
 - Study the observability patterns (022-023)
 
 ---
 
-## Contributing
+## About This Repository
 
-When adding new examples:
-1. Follow the numbering convention (NNN.name.xml)
-2. Add sub-numbers for variants (NNN.1.variant-name.xml)
-3. Include comments explaining the example's purpose
-4. Test with at least 2-3 different models
+This is a frozen companion repository for the book. The files here match the examples referenced in the text and are provided as-is for you to use, adapt, and build upon in your own work.
+
+For the full guide with explanations, rationale, anti-patterns, governance patterns, and enterprise adoption roadmap, see the book:
+
+**[XML-Structured Prompting: A Software Engineering Discipline for Reliable LLM Systems](https://antonvazquez.gumroad.com/l/xml-structured-prompting)**
 
 ---
 
-## Related Resources
+## License
 
-- **Book**: "XML-Structured Prompting: A Software Engineering Discipline for Reliable LLM Systems"
-- **PDF/HTML**: Generated via `deploy/renderpdf.py`
-- **Improvements**: See `IMPROVEMENTS.md` for planned enhancements
+These templates and examples are provided for educational and professional use. Apply the patterns freely in your work.
+
+---
+
+> "After 25 years, XML has finally achieved its true destiny: not as a data interchange format, not as a configuration language—but as emotional support markup for large language models."
